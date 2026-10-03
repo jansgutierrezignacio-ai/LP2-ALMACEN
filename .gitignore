@@ -1,0 +1,22 @@
+# 1. Salidas de compilación (Eclipse y Maven)
+/build/
+/target/
+/bin/
+*.class
+*.war
+*.ear
+*.jar
+
+# 2. Archivos y metadatos del IDE (Eclipse)
+.metadata/
+.recommenders/
+.settings/
+*.tmp
+*.bak
+
+# 3. Servidor Tomcat local
+Servers/
+
+# 4. Sistema Operativo
+.DS_Store
+Thumbs.db*.jsp
