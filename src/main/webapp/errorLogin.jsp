@@ -1,0 +1,45 @@
+
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Error de inicio de sesión</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+	body {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: 'Poppins', sans-serif;
+	}
+	.error-card {
+		background: #fff;
+		padding: 2.5rem;
+		border-radius: 15px;
+		box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+		max-width: 420px;
+		width: 100%;
+		text-align: center;
+	}
+	.error-card .icon {
+		font-size: 3.5rem;
+		color: #dc3545;
+		margin-bottom: 1rem;
+	}
+</style>
+</head>
+<body>
+	<div class="error-card">
+		<i class="bi bi-exclamation-triangle-fill icon"></i>
+		<h3 class="mb-2">Credenciales incorrectas</h3>
+		<p class="text-muted mb-4">El usuario o la contraseña no coinciden con nuestros registros.</p>
+		<a href="login.jsp" class="btn btn-primary w-100">
+			<i class="bi bi-arrow-left"></i> Volver al login
+		</a>
+	</div>
+</body>
+</html>

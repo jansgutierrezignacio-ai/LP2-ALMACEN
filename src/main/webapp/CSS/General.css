@@ -1,0 +1,71 @@
+@charset "UTF-8";
+/* ===== estilos.css ===== */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f6f9;
+}
+
+.sidebar {
+    width: 250px;
+    background: #2f4050;
+    min-height: 100vh;
+}
+
+.sidebar .nav-link {
+    color: #cfd8dc;
+    margin: 5px 0;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+    background: #1ab394;
+    color: white;
+    border-radius: 5px;
+}
+
+.topbar {
+    background: #1ab394;
+    color: white;
+    height: 60px;
+}
+
+.card {
+    padding: 15px;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card i {
+    font-size: 24px;
+}
+
+.card h6 {
+    margin: 5px 0;
+}
+
+/* Colores */
+.card-blue { background: #17a2b8; }
+.card-orange { background: #f39c12; }
+.card-purple { background: #6f42c1; }
+.card-gray { background: #6c757d; }
+.card-darkblue { background: #3c8dbc; }
+.card-red { background: #dc3545; }
+.card-blue2 { background: #007bff; }
+.card-orange2 { background: #fd7e14; }
+.card-green { background: #28a745; }
+.card-red2 { background: #e74c3c; }
+.card-brown { background: #8e5c42; }
+.card-cyan { background: #17c0eb; }
+
+.card-action {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.card-action:hover {
+    transform: scale(1.05);
+}

@@ -20,3 +20,9 @@ Servers/
 # 4. Sistema Operativo
 .DS_Store
 Thumbs.db*.jsp
+.classpath
+.project
+.settings/
+.metadata/
+target/
+build/
