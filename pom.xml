@@ -10,13 +10,36 @@
     <version>1.0.0</version>
     <packaging>war</packaging>
 
+   <!-- 1. BLOQUE AGREGADO: Heredar de la configuración global de Spring Boot -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.4</version>
+        <relativePath/> 
+    </parent>
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Forzamos la propiedad de Java interna de Spring Boot -->
+        <java.version>11</java.version>
     </properties>
 
     <dependencies>
+        <!-- 2. BLOQUE AGREGADO: Starter Web de Spring Boot (incluye Tomcat embebido) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 3. BLOQUE AGREGADO: Compilador Jasper para que Spring Boot procese tus archivos .jsp -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Servlet API para Tomcat 10.1 (Jakarta) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -61,6 +84,12 @@
 
     <build>
         <plugins>
+            <!-- 4. BLOQUE AGREGADO: Herramienta de compilación y empaquetado de Spring Boot -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
