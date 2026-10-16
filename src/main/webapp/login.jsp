@@ -114,19 +114,19 @@
         <h3>Bienvenido</h3>
         <p class="text-center text-muted mb-4">Inicia sesión en el Almacén</p>
         
-        <form action="ServletUsuario" method="post" name="frmLogin">
+        <form action="/login" method="post" name="frmLogin">
             <input type="hidden" name="type" value="login"/>
             
             <div class="mb-3">
                 <label class="form-label">Usuario</label>
                 <div class="input-group">
-                    <input class="form-control" type="text" name="txtUsername" placeholder="Nombre de usuario">
+                    <input class="form-control" type="text" name="username" placeholder="Nombre de usuario">
                 </div>
             </div>
             
             <div class="mb-4">
                 <label class="form-label">Contraseña</label>
-                <input class="form-control" type="password" name="txtClave" placeholder="********">
+                <input class="form-control" type="password" name="password" placeholder="********">
             </div>
             
             <div class="d-grid gap-2">
@@ -136,7 +136,7 @@
             </div>
 
             <div class="text-center mt-3">
-            <a href="ServletUsuario?type=nuevo" class="btn btn-outline-secondary" type="nuevo">Registrarse</a>
+            <a href="/usuarios/nuevo" class="btn btn-outline-secondary" type="nuevo">Registrarse</a>
             </div>
             
             <div class="mt-4 text-center border-top pt-3">
