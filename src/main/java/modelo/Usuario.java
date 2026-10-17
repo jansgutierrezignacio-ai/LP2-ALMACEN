@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+
 @Entity
 @Table(name = "usuario") // Asegúrate de que el nombre coincida con tu tabla en MySQL
 public class Usuario {

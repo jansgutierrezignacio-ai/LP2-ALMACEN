@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
 @Entity
 @Table(name = "reporte") // Ajusta el nombre si apunta a una vista o tabla específica en tu BD
 public class Reporte {

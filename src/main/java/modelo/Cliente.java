@@ -7,6 +7,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+
+
 @Entity
 @Table(name = "cliente") // Asegúrate de que el nombre coincida exactamente con tu tabla en MySQL
 public class Cliente {
