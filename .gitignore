@@ -30,3 +30,6 @@ build/
 # 5. Variables de entorno (credenciales locales)
 .env
 .env.*
+
+# 6. Script SQL original del equipo (reemplazado por la reconstruccion sql/BD_ALMACEN.sql)
+sql/BD_Almacen(ProyectoFinal)-ContarReporteVenta.sql

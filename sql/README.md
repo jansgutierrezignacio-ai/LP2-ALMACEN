@@ -3,7 +3,7 @@
 Esta carpeta contiene la base de datos del proyecto **Comercial Autopartes SAC**
 (LP2 - Cibertec), reconstruida de forma completa y robusta a partir de:
 
-- `BD_Almacen(ProyectoFinal)-ContarReporteVenta.sql` → script original del equipo.
+- El script original del equipo (se conserva localmente, fuera del repositorio).
 - El **código Java real** (`procesos/Gestion*.java`, `procesos/GestionUsuario.java`,
   `util/MysqlConexion.java`, `src/main/resources/application.properties`).
 
@@ -12,7 +12,10 @@ Esta carpeta contiene la base de datos del proyecto **Comercial Autopartes SAC**
 | Archivo | Descripción |
 |---|---|
 | `BD_ALMACEN.sql` | **Script completo**: base de datos, 8 tablas, datos semilla y 27 procedimientos almacenados. |
-| `BD_Almacen(ProyectoFinal)-ContarReporteVenta.sql` | Script original (sin tocar, se conserva como referencia). |
+| `README.md` | Este documento. |
+
+> El script original del equipo no se versiona: sus tablas, columnas, tipos, claves
+> y procedimientos quedaron cubiertos por `BD_ALMACEN.sql`.
 
 ## Nombre de la base de datos
 
@@ -22,7 +25,8 @@ Se unificó el nombre a **`BD_ALMACEN`** (decisión tomada tras confirmación co
 - Código anterior: `LP2_ALMACEN` (MysqlConexion.java, application.properties)
 - Unificado: **`BD_ALMACEN`** (BD + código + informe)
 
-El código fue actualizado para usar `BD_ALMACEN` y la contraseña correcta.
+El código fue actualizado para usar `BD_ALMACEN` y las credenciales se externalizaron
+al archivo `.env` (no versionado) o a variables de entorno.
 
 ## Cambios respecto del script original
 
