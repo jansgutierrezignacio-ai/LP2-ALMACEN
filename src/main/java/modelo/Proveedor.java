@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "proveedor")
+@Table(name = "Proveedor")
 public class Proveedor {
     
     @Id
@@ -17,13 +17,13 @@ public class Proveedor {
     @Column(name = "id_proveedor")
     private int id_proveedor;
     
-    @Column(name = "ruc", length = 20)
+    @Column(name = "ruc", length = 11)
     private String ruc;
     
     @Column(name = "razon_social", length = 150)
     private String razon_social;
     
-    @Column(name = "telefono", length = 20)
+    @Column(name = "telefono", length = 15)
     private String telefono;
     
     @Column(name = "estado")

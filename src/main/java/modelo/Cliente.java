@@ -10,15 +10,15 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "cliente") // Asegúrate de que el nombre coincida exactamente con tu tabla en MySQL
+@Table(name = "Cliente")
 public class Cliente {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idCliente")
+    @Column(name = "id_cliente")
     private int idCliente;
     
-    @Column(name = "dni", length = 8, nullable = false)
+    @Column(name = "dni", length = 9, nullable = false)
     private String dni;
     
     @Column(name = "nombre", length = 50, nullable = false)
@@ -27,7 +27,7 @@ public class Cliente {
     @Column(name = "apellido", length = 50, nullable = false)
     private String apellido;
     
-    @Column(name = "telefono", length = 15)
+    @Column(name = "telefono", length = 9)
     private String telefono;
     
     public Cliente() {

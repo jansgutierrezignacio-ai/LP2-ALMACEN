@@ -10,7 +10,7 @@ import javax.persistence.Transient;
 
 
 @Entity
-@Table(name = "usuario") // Asegúrate de que el nombre coincida con tu tabla en MySQL
+@Table(name = "Usuarios")
 public class Usuario {
     
     @Id
@@ -30,10 +30,10 @@ public class Usuario {
     @Transient // Permite usarlo en joins o listados sin buscarlo como columna física en la tabla
     private String nombreTipo;
     
-    @Column(name = "nombres", length = 100)
+    @Column(name = "nombres", length = 50)
     private String nombres;
     
-    @Column(name = "apellidos", length = 100)
+    @Column(name = "apellidos", length = 50)
     private String apellidos; //nuevo
 
     public Usuario() {

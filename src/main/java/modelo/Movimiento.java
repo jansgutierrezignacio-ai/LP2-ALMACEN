@@ -14,12 +14,12 @@ import javax.persistence.TemporalType;
 
 
 @Entity
-@Table(name = "movimiento")
+@Table(name = "Movimientos")
 public class Movimiento {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idMovimiento")
+    @Column(name = "id")
     private int idMovimiento;
     
     @Column(name = "tipo", length = 50)
@@ -32,7 +32,7 @@ public class Movimiento {
     @Column(name = "fecha")
     private Date fecha;
     
-    @Column(name = "usuario", length = 50) 
+    @Column(name = "usuario", length = 100) 
     private String usuario;
     
     public Movimiento() {

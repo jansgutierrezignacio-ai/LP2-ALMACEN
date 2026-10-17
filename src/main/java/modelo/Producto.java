@@ -10,21 +10,21 @@ import javax.persistence.Transient;
 
 
 @Entity
-@Table(name = "producto")
+@Table(name = "Producto")
 public class Producto {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idProducto")
+    @Column(name = "id_producto")
     private int idProducto;
     
-    @Column(name = "codigo", length = 50)
+    @Column(name = "codigo", length = 20)
     private String codigo;
     
     @Column(name = "nombre", length = 100, nullable = false)
     private String nombre;
     
-    @Column(name = "descripcion", length = 255)
+    @Column(name = "descripcion", length = 200, nullable = false)
     private String descripcion;
     
     @Column(name = "precio", nullable = false)
@@ -33,7 +33,7 @@ public class Producto {
     @Column(name = "stock", nullable = false)
     private int stock;
     
-    @Column(name = "idProveedor")
+    @Column(name = "id_proveedor")
     private int idProveedor;
     
     @Transient // Permite usarlo para los joins al listar sin que Hibernate busque la columna en la BD
