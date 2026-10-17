@@ -19,9 +19,10 @@
         
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/BD_Almacen?useSSL=false&amp;serverTimezone=UTC"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/BD_ALMACEN?useSSL=false&amp;serverTimezone=UTC"/>
             <property name="javax.persistence.jdbc.user" value="root"/>
-            <property name="javax.persistence.jdbc.password" value="mysql"/>
+            <!-- La clave se suministra por variable de entorno o por el archivo .env local (no versionado). -->
+            <property name="javax.persistence.jdbc.password" value=""/>
             
             <!-- Propiedades de Hibernate -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>

@@ -26,3 +26,7 @@ Thumbs.db*.jsp
 .metadata/
 target/
 build/
+
+# 5. Variables de entorno (credenciales locales)
+.env
+.env.*
