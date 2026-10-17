@@ -2,14 +2,23 @@ package com.autopartes;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
-// Le indicamos a Spring Boot que busque @Service y @Controller en TODOS tus paquetes
+// Habilita el escaneo de @Service y @Controller de todos los paquetes del proyecto
+// y registra las clases entidad del paquete "modelo" para la capa JPA/Hibernate.
 @SpringBootApplication(
-    exclude = {DataSourceAutoConfiguration.class},
     scanBasePackages = {"com.autopartes", "procesos", "controlador", "interfaces"}
 )
-public class Application {
+@EntityScan("modelo")
+public class Application extends SpringBootServletInitializer {
+
+    // Permite desplegar el WAR en un Tomcat externo (Spring arranca desde el contenedor).
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(Application.class);
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

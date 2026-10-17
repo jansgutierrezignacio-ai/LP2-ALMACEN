@@ -1,194 +1,113 @@
 package procesos;
 
-
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
+import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import interfaces.IntCliente;
 import modelo.Cliente;
-import util.MysqlConexion;
 
 @Service
-
+@Transactional
 public class GestionCliente implements IntCliente {
 
-	@Override
-	public int crearCliente(Cliente cliente) {
-		int value = 0;
-		Connection cn = null;
-		CallableStatement csm = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_registrarCliente(?,?,?,?)}";
-			csm = cn.prepareCall(sql);
-			csm.setString(1, cliente.getDni());
-			csm.setString(2, cliente.getNombre());
-			csm.setString(3, cliente.getApellido());
-			csm.setString(4, cliente.getTelefono());
-			value = csm.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return value;
-	}
+    @PersistenceContext
+    private EntityManager em;
 
-	@Override
-	public List<Cliente> listarCliente() {
-		List<Cliente> listCliente = new ArrayList<Cliente>();
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_listarCliente()}";
-			csm = cn.prepareCall(sql);
-			rs = csm.executeQuery();
-			while (rs.next()) {
-				Cliente cliente = new Cliente();
-				cliente.setIdCliente(rs.getInt("id_cliente")); 
-				cliente.setDni(rs.getString("dni"));
-				cliente.setNombre(rs.getString("nombre"));
-				cliente.setApellido(rs.getString("apellido"));
-				cliente.setTelefono(rs.getString("telefono"));
-				listCliente.add(cliente);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return listCliente;
-	}
+    @Override
+    public int crearCliente(Cliente c) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_registrarCliente");
+        q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(3, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(4, String.class, ParameterMode.IN);
+        q.setParameter(1, c.getDni());
+        q.setParameter(2, c.getNombre());
+        q.setParameter(3, c.getApellido());
+        q.setParameter(4, c.getTelefono());
+        return q.executeUpdate();
+    }
 
-	@Override
-	public Cliente obtenerCliente(int id) {
-		Cliente cliente = null;
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_obtenerCliente(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setInt(1, id);
-			rs = csm.executeQuery();
-			if (rs.next()) {
-				cliente = new Cliente();
-				cliente.setIdCliente(rs.getInt("id_cliente"));
-				cliente.setDni(rs.getString("dni"));
-				cliente.setNombre(rs.getString("nombre"));
-				cliente.setApellido(rs.getString("apellido"));
-				cliente.setTelefono(rs.getString("telefono"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return cliente;
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Cliente> listarCliente() {
+        List<Cliente> lista = new ArrayList<>();
+        List<Object[]> filas = em.createStoredProcedureQuery("sp_listarCliente").getResultList();
+        for (Object[] f : filas) {
+            lista.add(mapear(f));
+        }
+        return lista;
+    }
 
-	@Override
-	public int eliminarCliente(int codigo) {
-		int value = 0;
-		Connection cn = null;
-		CallableStatement csm = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_eliminarCliente(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setInt(1, codigo); 
-			value = csm.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return value;
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public Cliente obtenerCliente(int id) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_obtenerCliente");
+        q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        q.setParameter(1, id);
+        List<Object[]> filas = q.getResultList();
+        return filas.isEmpty() ? null : mapear(filas.get(0));
+    }
 
-	@Override
-	public int editarCliente(Cliente cliente) {
-		int value = 0;
-		Connection cn = null;
-		CallableStatement csm = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_actualizarCliente(?,?,?,?,?)}";
-			csm = cn.prepareCall(sql);
-			csm.setInt(1, cliente.getIdCliente());
-			csm.setString(2, cliente.getDni());
-			csm.setString(3, cliente.getNombre());
-			csm.setString(4, cliente.getApellido());
-			csm.setString(5, cliente.getTelefono());
-			value = csm.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return value;
-	}
+    @Override
+    public int eliminarCliente(int id) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_eliminarCliente");
+        q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        q.setParameter(1, id);
+        return q.executeUpdate();
+    }
 
-	@Override
-	public List<Cliente> buscarCliente(String cod) {
-		return buscarClienteByNombre(cod);
-	}
+    @Override
+    public int editarCliente(Cliente c) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_actualizarCliente");
+        q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(3, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(4, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(5, String.class, ParameterMode.IN);
+        q.setParameter(1, c.getIdCliente());
+        q.setParameter(2, c.getDni());
+        q.setParameter(3, c.getNombre());
+        q.setParameter(4, c.getApellido());
+        q.setParameter(5, c.getTelefono());
+        return q.executeUpdate();
+    }
 
-	@Override
-	public List<Cliente> buscarClienteByNombre(String nom) {
-		List<Cliente> listCliente = new ArrayList<Cliente>();
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_buscarClienteByNombre(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setString(1, nom);
-			rs = csm.executeQuery();
-			while (rs.next()) {
-				Cliente cliente = new Cliente();
-				cliente.setIdCliente(rs.getInt("id_cliente"));
-				cliente.setDni(rs.getString("dni"));
-				cliente.setNombre(rs.getString("nombre"));
-				cliente.setApellido(rs.getString("apellido"));
-				cliente.setTelefono(rs.getString("telefono"));
-				listCliente.add(cliente);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return listCliente;
-	}
+    @Override
+    public List<Cliente> buscarCliente(String texto) {
+        return buscarClienteByNombre(texto);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Cliente> buscarClienteByNombre(String texto) {
+        List<Cliente> lista = new ArrayList<>();
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_buscarClienteByNombre");
+        q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+        q.setParameter(1, texto);
+        List<Object[]> filas = q.getResultList();
+        for (Object[] f : filas) {
+            lista.add(mapear(f));
+        }
+        return lista;
+    }
+
+    // sp_listarCliente / sp_obtenerCliente / sp_buscarClienteByNombre:
+    // id_cliente, dni, nombre, apellido, telefono
+    private Cliente mapear(Object[] f) {
+        Cliente c = new Cliente();
+        c.setIdCliente(((Number) f[0]).intValue());
+        c.setDni((String) f[1]);
+        c.setNombre((String) f[2]);
+        c.setApellido((String) f[3]);
+        c.setTelefono(f[4] == null ? null : String.valueOf(f[4]));
+        return c;
+    }
 }

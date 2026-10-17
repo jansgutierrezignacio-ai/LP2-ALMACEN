@@ -140,7 +140,7 @@
             </div>
             
             <div class="mt-4 text-center border-top pt-3">
-                <small class="text-muted">Sistema de grupo>
+                <small class="text-muted">Sistema de grupo</small>
             </div>
         </form>
     </div>

@@ -1,249 +1,133 @@
 package procesos;
 
-import java.sql.CallableStatement;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
+import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import interfaces.IntProducto;
 import modelo.Producto;
-import util.MysqlConexion;
 
 @Service
-
+@Transactional
 public class GestionProducto implements IntProducto {
 
-	@Override
-	public int crearProducto(Producto producto) {
-		int value = 0;
-		Connection cn = null;
-		CallableStatement csm = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_registrarProducto(?,?,?,?,?,?)}";
-			csm = cn.prepareCall(sql);
-			csm.setString(1, producto.getCodigo());
-			csm.setString(2, producto.getNombre());
-			csm.setString(3, producto.getDescripcion());
-			csm.setDouble(4, producto.getPrecio());
-			csm.setInt(5, producto.getStock());
-			csm.setInt(6, producto.getIdProveedor());
-			value = csm.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return value;
-	}
+    @PersistenceContext
+    private EntityManager em;
 
-	@Override
-	public List<Producto> listarProducto() {
-		List<Producto> listProducto = new ArrayList<Producto>();
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_listarProducto()}";
-			csm = cn.prepareCall(sql);
-			rs = csm.executeQuery();
-			while (rs.next()) {
-				Producto producto = new Producto();
-				producto.setIdProducto(rs.getInt("id_producto"));
-				producto.setCodigo(rs.getString("codigo"));
-				producto.setNombre(rs.getString("nombre"));
-				producto.setDescripcion(rs.getString("descripcion"));
-				producto.setPrecio(rs.getDouble("precio"));
-				producto.setStock(rs.getInt("stock"));
-				producto.setIdProveedor(rs.getInt("id_proveedor"));
-				// Si el SP hace join con proveedor, traerá razon_social
-				try {
-					producto.setNombreProveedor(rs.getString("razon_social"));
-				} catch (Exception ignore) { /* columna opcional */ }
-				listProducto.add(producto);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return listProducto;
-	}
+    @Override
+    public int crearProducto(Producto p) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_registrarProducto");
+        q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(3, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(4, Double.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(5, Integer.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(6, Integer.class, ParameterMode.IN);
+        q.setParameter(1, p.getCodigo());
+        q.setParameter(2, p.getNombre());
+        q.setParameter(3, p.getDescripcion());
+        q.setParameter(4, p.getPrecio());
+        q.setParameter(5, p.getStock());
+        q.setParameter(6, p.getIdProveedor());
+        return q.executeUpdate();
+    }
 
-	@Override
-	public Producto obtenerProducto(int id) {
-		Producto producto = null;
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_obtenerProducto(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setInt(1, id);
-			rs = csm.executeQuery();
-			if (rs.next()) {
-				producto = new Producto();
-				producto.setIdProducto(rs.getInt("id_producto"));
-				producto.setCodigo(rs.getString("codigo"));
-				producto.setNombre(rs.getString("nombre"));
-				producto.setDescripcion(rs.getString("descripcion"));
-				producto.setPrecio(rs.getDouble("precio"));
-				producto.setStock(rs.getInt("stock"));
-				producto.setIdProveedor(rs.getInt("id_proveedor"));
-				try {
-					producto.setNombreProveedor(rs.getString("razon_social"));
-				} catch (Exception ignore) { }
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return producto;
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Producto> listarProducto() {
+        List<Producto> lista = new ArrayList<>();
+        List<Object[]> filas = em.createStoredProcedureQuery("sp_listarProducto").getResultList();
+        for (Object[] f : filas) {
+            lista.add(mapear(f));
+        }
+        return lista;
+    }
 
-	@Override
-	public int eliminarProducto(int codigo) {
-		int value = 0;
-		Connection cn = null;
-		CallableStatement csm = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_eliminarProducto(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setInt(1, codigo);
-			value = csm.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return value;
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public Producto obtenerProducto(int id) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_obtenerProducto");
+        q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        q.setParameter(1, id);
+        List<Object[]> filas = q.getResultList();
+        return filas.isEmpty() ? null : mapear(filas.get(0));
+    }
 
-	@Override
-	public int editarProducto(Producto producto) {
-		int value = 0;
-		Connection cn = null;
-		CallableStatement csm = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_actualizarProducto(?,?,?,?,?,?,?)}";
-			csm = cn.prepareCall(sql);
-			csm.setInt(1, producto.getIdProducto());
-			csm.setString(2, producto.getCodigo());
-			csm.setString(3, producto.getNombre());
-			csm.setString(4, producto.getDescripcion());
-			csm.setDouble(5, producto.getPrecio());
-			csm.setInt(6, producto.getStock());
-			csm.setInt(7, producto.getIdProveedor());
-			value = csm.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return value;
-	}
+    @Override
+    public int eliminarProducto(int id) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_eliminarProducto");
+        q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        q.setParameter(1, id);
+        return q.executeUpdate();
+    }
 
-	@Override
-	public List<Producto> buscarProducto(String cod) {
-		// Búsqueda por código
-		List<Producto> listProducto = new ArrayList<Producto>();
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_buscarProducto(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setString(1, cod);
-			rs = csm.executeQuery();
-			while (rs.next()) {
-				Producto producto = new Producto();
-				producto.setIdProducto(rs.getInt("id_producto"));
-				producto.setCodigo(rs.getString("codigo"));
-				producto.setNombre(rs.getString("nombre"));
-				producto.setDescripcion(rs.getString("descripcion"));
-				producto.setPrecio(rs.getDouble("precio"));
-				producto.setStock(rs.getInt("stock"));
-				producto.setIdProveedor(rs.getInt("id_proveedor"));
-				try {
-					producto.setNombreProveedor(rs.getString("razon_social"));
-				} catch (Exception ignore) { }
-				listProducto.add(producto);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return listProducto;
-	}
+    @Override
+    public int editarProducto(Producto p) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_actualizarProducto");
+        q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(3, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(4, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(5, Double.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(6, Integer.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(7, Integer.class, ParameterMode.IN);
+        q.setParameter(1, p.getIdProducto());
+        q.setParameter(2, p.getCodigo());
+        q.setParameter(3, p.getNombre());
+        q.setParameter(4, p.getDescripcion());
+        q.setParameter(5, p.getPrecio());
+        q.setParameter(6, p.getStock());
+        q.setParameter(7, p.getIdProveedor());
+        return q.executeUpdate();
+    }
 
-	@Override
-	public List<Producto> buscarProductoByNombre(String nom) {
-		List<Producto> listProducto = new ArrayList<Producto>();
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_buscarProductoByNombre(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setString(1, nom);
-			rs = csm.executeQuery();
-			while (rs.next()) {
-				Producto producto = new Producto();
-				producto.setIdProducto(rs.getInt("id_producto"));
-				producto.setCodigo(rs.getString("codigo"));
-				producto.setNombre(rs.getString("nombre"));
-				producto.setDescripcion(rs.getString("descripcion"));
-				producto.setPrecio(rs.getDouble("precio"));
-				producto.setStock(rs.getInt("stock"));
-				producto.setIdProveedor(rs.getInt("id_proveedor"));
-				try {
-					producto.setNombreProveedor(rs.getString("razon_social"));
-				} catch (Exception ignore) { }
-				listProducto.add(producto);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return listProducto;
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Producto> buscarProducto(String codigo) {
+        List<Producto> lista = new ArrayList<>();
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_buscarProducto");
+        q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+        q.setParameter(1, codigo);
+        List<Object[]> filas = q.getResultList();
+        for (Object[] f : filas) {
+            lista.add(mapear(f));
+        }
+        return lista;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Producto> buscarProductoByNombre(String texto) {
+        List<Producto> lista = new ArrayList<>();
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_buscarProductoByNombre");
+        q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+        q.setParameter(1, texto);
+        List<Object[]> filas = q.getResultList();
+        for (Object[] f : filas) {
+            lista.add(mapear(f));
+        }
+        return lista;
+    }
+
+    // sp_listarProducto / sp_obtenerProducto / sp_buscarProducto(ByNombre):
+    // id_producto, codigo, nombre, descripcion, precio, stock, id_proveedor, razon_social
+    private Producto mapear(Object[] f) {
+        Producto p = new Producto();
+        p.setIdProducto(((Number) f[0]).intValue());
+        p.setCodigo(f[1] == null ? null : String.valueOf(f[1]));
+        p.setNombre(f[2] == null ? null : String.valueOf(f[2]));
+        p.setDescripcion(f[3] == null ? null : String.valueOf(f[3]));
+        p.setPrecio(f[4] == null ? 0 : ((Number) f[4]).doubleValue());
+        p.setStock(f[5] == null ? 0 : ((Number) f[5]).intValue());
+        p.setIdProveedor(f[6] == null ? 0 : ((Number) f[6]).intValue());
+        p.setNombreProveedor(f.length > 7 && f[7] != null ? String.valueOf(f[7]) : null);
+        return p;
+    }
 }

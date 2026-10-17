@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <c:if test="${dataMovimiento == null}">
-	<jsp:forward page="ServletMovimiento?type=listar"/>
+	<jsp:forward page="movimientos?type=listar"/>
 </c:if>
 
 <!DOCTYPE html>
@@ -31,13 +31,13 @@
     <div class="sidebar p-3">
         <h4 class="text-white mb-4">Inventario</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="ServletInicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletCliente?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletProveedor?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletProducto?type=listar"><i class="bi bi-box"></i> Productos</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletReporte?type=listar"><i class="bi bi-graph-up-arrow"></i> Reporte</a></li>
-            <li class="nav-item"><a class="nav-link active" href="ServletMovimiento?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletUsuario?type=logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
+            <li class="nav-item"><a class="nav-link" href="inicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="clientes?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
+            <li class="nav-item"><a class="nav-link" href="proveedores?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
+            <li class="nav-item"><a class="nav-link" href="productos?type=listar"><i class="bi bi-box"></i> Productos</a></li>
+            <li class="nav-item"><a class="nav-link" href="reportes?type=listar"><i class="bi bi-graph-up-arrow"></i> Reporte</a></li>
+            <li class="nav-item"><a class="nav-link active" href="movimientos?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>
+            <li class="nav-item"><a class="nav-link" href="logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
         </ul>
     </div>
 

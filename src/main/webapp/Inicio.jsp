@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
- Si la página se abre directamente (sin pasar por ServletInicio) cargamos
+ Si la página se abre directamente (sin pasar por inicio) cargamos
  los contadores desde la BD de forma perezosa mediante un redirect interno.
 --%>
 <c:if test="${totalClientes == null}">
-	<jsp:forward page="ServletInicio"/>
+	<jsp:forward page="inicio"/>
 </c:if>
 <!DOCTYPE html>
 <html lang="es">
@@ -31,13 +31,13 @@
         <h4 class="text-white mb-4">Inventario</h4>
 
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link active" href="ServletInicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletCliente?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletProveedor?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletProducto?type=listar"><i class="bi bi-box"></i> Productos</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletReporte?type=listar"><i class="bi bi-graph-up-arrow"></i> Reporte</a></li>    
-            <li class="nav-item"><a class="nav-link" href="ServletMovimiento?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletUsuario?type=logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
+            <li class="nav-item"><a class="nav-link active" href="inicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="clientes?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
+            <li class="nav-item"><a class="nav-link" href="proveedores?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
+            <li class="nav-item"><a class="nav-link" href="productos?type=listar"><i class="bi bi-box"></i> Productos</a></li>
+            <li class="nav-item"><a class="nav-link" href="reportes?type=listar"><i class="bi bi-graph-up-arrow"></i> Reporte</a></li>    
+            <li class="nav-item"><a class="nav-link" href="movimientos?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>
+            <li class="nav-item"><a class="nav-link" href="logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
         </ul>
     </div>
 
@@ -58,7 +58,7 @@
             <!-- Cards -->
             <div class="row g-3">
                 <div class="col-md-3">
-                	<a href="ServletCliente?type=listar" style="text-decoration: none;">
+                	<a href="clientes?type=listar" style="text-decoration: none;">
                     	<div class="card card-blue card-action">
                         	<i class="bi bi-people"></i>
                         	<h6>Clientes</h6>
@@ -68,7 +68,7 @@
                 </div>
 
                 <div class="col-md-3">
-                	<a href="ServletProveedor?type=listar" style="text-decoration: none;">
+                	<a href="proveedores?type=listar" style="text-decoration: none;">
                     	<div class="card card-orange card-action">
                         	<i class="bi bi-truck"></i>
                         	<h6>Proveedores</h6>
@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="col-md-3">
-                	<a href="ServletProducto?type=listar" style="text-decoration: none;">
+                	<a href="productos?type=listar" style="text-decoration: none;">
                     	<div class="card card-purple card-action">
                         	<i class="bi bi-box"></i>
                         	<h6>Productos</h6>
@@ -88,7 +88,7 @@
                 </div>
                 
                 <div class="col-md-3">
-    				<a href="ServletReporte?type=listar" style="text-decoration: none;">
+    				<a href="reportes?type=listar" style="text-decoration: none;">
         				<div class="card card-brown card-action">
             				<i class="bi bi-graph-up-arrow"></i>
             				<h6>Reporte</h6>
@@ -98,7 +98,7 @@
 				</div>
 
                 <div class="col-md-3">
-    				<a href="ServletMovimiento?type=listar" style="text-decoration: none;">
+    				<a href="movimientos?type=listar" style="text-decoration: none;">
         				<div class="card card-gray card-action">
             				<i class="bi bi-clock-history"></i>
             				<h6>Movimientos</h6>
@@ -108,7 +108,7 @@
 				</div>
 				
                 <div class="col-md-3">
-                	<a href="ServletProducto?type=listar" style="text-decoration: none;">
+                	<a href="productos?type=listar" style="text-decoration: none;">
                     	<div class="card card-darkblue card-action">
                         	<i class="bi bi-box-seam"></i>
                         	<h6>Existencia total</h6>

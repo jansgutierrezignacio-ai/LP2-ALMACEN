@@ -5,8 +5,8 @@
 --%>
 <%
     if (session != null && session.getAttribute("usuario") != null) {
-        response.sendRedirect("ServletInicio");
+        response.sendRedirect("inicio");
     } else {
-        response.sendRedirect("login.jsp");
+        response.sendRedirect("login");
     }
 %>
