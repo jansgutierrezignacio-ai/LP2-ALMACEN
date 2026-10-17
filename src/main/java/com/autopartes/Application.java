@@ -4,8 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-// Esta exclusión le dice a Spring: "Arranca el servidor aunque no haya Base de Datos"
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+// Le indicamos a Spring Boot que busque @Service y @Controller en TODOS tus paquetes
+@SpringBootApplication(
+    exclude = {DataSourceAutoConfiguration.class},
+    scanBasePackages = {"com.autopartes", "procesos", "controlador", "interfaces"}
+)
 public class Application {
 
     public static void main(String[] args) {
