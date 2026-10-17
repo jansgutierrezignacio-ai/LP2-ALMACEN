@@ -78,7 +78,7 @@ $(document).ready(function() {
             <h4 class="text-center">Formulario de Registro de Usuario</h4>
             <hr>
             
-            <form action="ServletUsuario" method="post" name="frmNuevo">
+            <form action="usuarios" method="post" name="frmNuevo">
                 <input type="hidden" name="type" value="registrar">
                 
                 <div class="mb-3 row">

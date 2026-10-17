@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:if test="${dataProducto == null}">
-	<jsp:forward page="ServletProducto?type=listar"/>
+	<jsp:forward page="productos?type=listar"/>
 </c:if>
 <!DOCTYPE html>
 <html lang="es">
@@ -27,13 +27,13 @@
     <div class="sidebar p-3">
         <h4 class="text-white mb-4">Inventario</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="ServletInicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletCliente?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletProveedor?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link active" href="ServletProducto?type=listar"><i class="bi bi-box"></i> Productos</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletReporte?type=listar"><i class="bi bi-graph-up-arrow"></i> Reportes</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletMovimiento?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>  
-            <li class="nav-item"><a class="nav-link" href="ServletUsuario?type=logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
+            <li class="nav-item"><a class="nav-link" href="inicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="clientes?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
+            <li class="nav-item"><a class="nav-link" href="proveedores?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
+            <li class="nav-item"><a class="nav-link active" href="productos?type=listar"><i class="bi bi-box"></i> Productos</a></li>
+            <li class="nav-item"><a class="nav-link" href="reportes?type=listar"><i class="bi bi-graph-up-arrow"></i> Reportes</a></li>
+            <li class="nav-item"><a class="nav-link" href="movimientos?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>  
+            <li class="nav-item"><a class="nav-link" href="logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
         </ul>
     </div>
 
@@ -68,11 +68,11 @@
 			<div class="tab-pane fade ${activeTab != 'agregar' ? 'show active' : ''}" id="listar">
 				<div class="d-flex justify-content-between align-items-center mb-3">
 					<h5>Listado de Productos (${cantReg != null ? cantReg : 0})</h5>
-					<form action="ServletProducto" method="get" class="d-flex gap-2">
+					<form action="productos" method="get" class="d-flex gap-2">
 						<input type="hidden" name="type" value="buscar"/>
 						<input type="text" name="txtBuscar" value="${txtBuscar}" class="form-control" placeholder="Buscar por nombre...">
 						<button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
-						<a href="ServletProducto?type=listar" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i></a>
+						<a href="productos?type=listar" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i></a>
 					</form>
 				</div>
 				<table class="table table-striped table-hover">
@@ -99,8 +99,8 @@
 								</td>
 								<td>${p.nombreProveedor != null ? p.nombreProveedor : p.idProveedor}</td>
 								<td>
-									<a href="ServletProducto?type=infoEdit&id=${p.idProducto}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-									<a href="ServletProducto?type=eliminar&id=${p.idProducto}" class="btn btn-sm btn-danger"
+									<a href="productos?type=infoEdit&id=${p.idProducto}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
+									<a href="productos?type=eliminar&id=${p.idProducto}" class="btn btn-sm btn-danger"
 									   onclick="return confirm('¿Eliminar este producto?');"><i class="bi bi-trash"></i></a>
 								</td>
 							</tr>
@@ -115,7 +115,7 @@
 			<!-- AGREGAR -->
 			<div class="tab-pane fade ${activeTab == 'agregar' ? 'show active' : ''}" id="agregar">
 				<h5 class="mb-3">Nuevo Producto</h5>
-				<form action="ServletProducto" method="post" class="row g-3">
+				<form action="productos" method="post" class="row g-3">
 					<input type="hidden" name="type" value="registrar"/>
 					<div class="col-md-4">
 						<label class="form-label">Código</label>
@@ -153,7 +153,7 @@
 				</form>
 				<c:if test="${empty listProveedor}">
 					<div class="alert alert-warning mt-3">
-						No hay proveedores cargados. <a href="ServletProveedor?type=listar">Registrar un proveedor</a> primero.
+						No hay proveedores cargados. <a href="proveedores?type=listar">Registrar un proveedor</a> primero.
 					</div>
 				</c:if>
 			</div>
@@ -161,7 +161,7 @@
 			<!-- CONSULTAR -->
 			<div class="tab-pane fade" id="consultar">
 				<h5 class="mb-3">Consultar Producto</h5>
-				<form action="ServletProducto" method="get" class="d-flex gap-2 mb-3">
+				<form action="productos" method="get" class="d-flex gap-2 mb-3">
 					<input type="hidden" name="type" value="buscar"/>
 					<input type="text" name="txtBuscar" class="form-control" placeholder="Buscar producto por nombre o descripción...">
 					<button type="submit" class="btn btn-primary">Buscar</button>
@@ -177,7 +177,7 @@
 	<div class="modal fade" id="modalEditarProducto" tabindex="-1" aria-hidden="true">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
-				<form action="ServletProducto" method="post">
+				<form action="productos" method="post">
 					<div class="modal-header">
 						<h5 class="modal-title"><i class="bi bi-pencil"></i> Editar Producto</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -217,7 +217,7 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<a href="ServletProducto?type=listar" class="btn btn-secondary">Cancelar</a>
+						<a href="productos?type=listar" class="btn btn-secondary">Cancelar</a>
 						<button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar cambios</button>
 					</div>
 				</form>

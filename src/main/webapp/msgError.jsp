@@ -39,7 +39,7 @@
 			<a href="javascript:history.back()" class="btn btn-outline-secondary">
 				<i class="bi bi-arrow-left"></i> Regresar
 			</a>
-			<a href="Inicio.jsp" class="btn btn-primary">
+			<a href="inicio" class="btn btn-primary">
 				<i class="bi bi-house"></i> Ir al Inicio
 			</a>
 		</div>

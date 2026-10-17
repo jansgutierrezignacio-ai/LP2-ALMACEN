@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -35,13 +35,13 @@
     <div class="sidebar p-3">
         <h4 class="text-white mb-4">Inventario</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="ServletInicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletCliente?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletProveedor?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletProducto?type=listar"><i class="bi bi-box"></i> Productos</a></li>
-            <li class="nav-item"><a class="nav-link active" href="ServletReporte?type=listar"><i class="bi bi-graph-up-arrow"></i> Reportes</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletMovimiento?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>
-            <li class="nav-item"><a class="nav-link" href="ServletUsuario?type=logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
+            <li class="nav-item"><a class="nav-link" href="inicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="clientes?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
+            <li class="nav-item"><a class="nav-link" href="proveedores?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
+            <li class="nav-item"><a class="nav-link" href="productos?type=listar"><i class="bi bi-box"></i> Productos</a></li>
+            <li class="nav-item"><a class="nav-link active" href="reportes?type=listar"><i class="bi bi-graph-up-arrow"></i> Reportes</a></li>
+            <li class="nav-item"><a class="nav-link" href="movimientos?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>
+            <li class="nav-item"><a class="nav-link" href="logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
         </ul>
     </div>
 
@@ -66,7 +66,7 @@
             <div class="tab-pane fade show active" id="fechas">
                 <h6 class="text-muted mb-3 uppercase">Filtrar por rango de tiempo</h6>
                 
-                <form action="ServletReporte" method="get" class="row g-3 mb-4">
+                <form action="reportes" method="get" class="row g-3 mb-4">
                     <input type="hidden" name="type" value="listar">
                     <div class="col-md-4">
                         <input type="date" name="txtFechaInicio" class="form-control" value="${fInicio}" required>
@@ -97,7 +97,7 @@
                                 <td>${r.nombreCliente}</td>
                                 <td class="fw-bold text-success">S/ <fmt:formatNumber value="${r.total}" minFractionDigits="2"/></td>
                                 <td class="text-center">
-                                    <a href="ServletReporte?type=detalle&id=${r.idVenta}" class="btn btn-sm btn-outline-primary">
+                                    <a href="reportes?type=detalle&id=${r.idVenta}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-zoom-in"></i> Ver Detalle
                                     </a>
                                 </td>
@@ -135,7 +135,7 @@
                             </tbody>
                         </table>
                         <div class="mt-3">
-                            <button class="btn btn-secondary btn-sm" onclick="location.href='ServletReporte?type=listar'"><i class="bi bi-arrow-left"></i> Volver a la lista</button>
+                            <button class="btn btn-secondary btn-sm" onclick="location.href='reportes?type=listar'"><i class="bi bi-arrow-left"></i> Volver a la lista</button>
                         </div>
                     </c:when>
                     <c:otherwise>

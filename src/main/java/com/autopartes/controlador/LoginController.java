@@ -1,41 +1,49 @@
 package com.autopartes.controlador;
 
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import interfaces.IntUsuario;
+import modelo.Usuario;
+
 @Controller
 public class LoginController {
 
-    // 1. Muestra la pantalla de inicio de sesión cuando entras a la raíz o a /login
+    @Autowired
+    private IntUsuario usuarioService;
+
+    // Muestra la pantalla de acceso en la raíz y en /login
     @GetMapping({"/", "/login"})
     public String mostrarLogin() {
-        return "login"; 
+        return "login";
     }
 
-    // 2. Procesa los datos cuando el usuario presiona el botón "Ingresar"
+    // Valida las credenciales contra la base de datos y crea la sesión
     @PostMapping("/login")
-    public String procesarLogin(
-            @RequestParam("username") String username, 
-            @RequestParam("password") String password, 
-            Model model) {
-        
-        // REGLA DE VALIDACIÓN (Puedes cambiar "admin")
-        if ("admin".equals(username) && "123456".equals(password)) {
-            
-            return "Inicio";
-        } else {
-            // Si los datos son incorrectos, envía un mensaje de error a la vista login.jsp
-            model.addAttribute("error", "Usuario o contraseña incorrectos.");
-            return "login"; 
+    public String procesarLogin(@RequestParam("username") String username,
+                                @RequestParam("password") String password,
+                                HttpSession session, Model model) {
+        Usuario usuario = usuarioService.login(username, password);
+        if (usuario != null) {
+            session.setAttribute("usuario", usuario);
+            return "redirect:/inicio";
         }
+        model.addAttribute("mensaje", "No existe usuario y/o clave");
+        return "errorLogin";
     }
 
-    // 3. Permite cerrar sesión y regresar al login de forma limpia
+    // Cierra la sesión y regresa al formulario de acceso
     @GetMapping("/logout")
-    public String cerrarSesion() {
+    public String cerrarSesion(HttpSession session) {
+        if (session != null) {
+            session.invalidate();
+        }
         return "redirect:/login";
     }
 }

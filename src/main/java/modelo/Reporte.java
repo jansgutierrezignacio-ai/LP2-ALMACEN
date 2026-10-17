@@ -1,41 +1,21 @@
 package modelo;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-
-@Entity
-@Table(name = "reporte") // Ajusta el nombre si apunta a una vista o tabla específica en tu BD
+/**
+ * Objeto de transferencia (DTO) que representa una fila de los reportes de venta.
+ * NO es una entidad JPA: sus datos no provienen de una tabla, sino del conjunto
+ * de resultados que devuelven los procedimientos sp_ReporteVentasPorFechas y
+ * sp_ReporteDetalleVenta. Por eso la clase no lleva anotaciones de persistencia.
+ */
 public class Reporte {
 
-    @Id
-    @Column(name = "idVenta")
     private int idVenta;
-    
-    @Column(name = "idCliente")
-    private int idCliente;  
-    
-    @Column(name = "idProducto")
+    private int idCliente;
     private int idProducto;
-    
-    @Column(name = "nombreCliente", length = 100)
     private String nombreCliente;
-    
-    @Column(name = "nombreProducto", length = 100)
     private String nombreProducto;
-    
-    @Column(name = "fecha", length = 50)
     private String fecha;
-
-    @Column(name = "cantidad")
     private int cantidad;
-    
-    @Column(name = "precioUnit")
     private double precioUnit;
-    
-    @Column(name = "total")
     private double total;
 
     public Reporte() {

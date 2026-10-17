@@ -1,225 +1,122 @@
 package procesos;
 
-import java.sql.CallableStatement;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
+import javax.persistence.EntityManager;
+import javax.persistence.ParameterMode;
+import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import interfaces.IntProveedor;
 import modelo.Proveedor;
-import util.MysqlConexion;
 
-@Service 
-
+@Service
+@Transactional
 public class GestionProveedor implements IntProveedor {
 
-	@Override
-	public int crearProveedor(Proveedor proveedor) {
-		int value = 0;
-		Connection cn = null;
-		CallableStatement csm = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_registrarProveedor(?,?,?,?)}";
-			csm = cn.prepareCall(sql);
-			csm.setString(1, proveedor.getRuc());
-			csm.setString(2, proveedor.getRazon_social());
-			csm.setString(3, proveedor.getTelefono());
-			csm.setInt(4, proveedor.getEstado());
-			value = csm.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return value;
-	}
+    @PersistenceContext
+    private EntityManager em;
 
-	@Override
-	public List<Proveedor> listarProveedor() {
-		List<Proveedor> listProveedor = new ArrayList<Proveedor>();
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_listarProveedor()}";
-			csm = cn.prepareCall(sql);
-			rs = csm.executeQuery();
-			while (rs.next()) {
-				Proveedor proveedor = new Proveedor();
-				proveedor.setId_proveedor(rs.getInt("id_proveedor"));
-				proveedor.setRuc(rs.getString("ruc"));
-				proveedor.setRazon_social(rs.getString("razon_social"));
-				proveedor.setTelefono(rs.getString("telefono"));
-				proveedor.setEstado(rs.getInt("estado"));
-				listProveedor.add(proveedor);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return listProveedor;
-	}
+    @Override
+    public int crearProveedor(Proveedor p) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_registrarProveedor");
+        q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(3, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(4, Integer.class, ParameterMode.IN);
+        q.setParameter(1, p.getRuc());
+        q.setParameter(2, p.getRazon_social());
+        q.setParameter(3, p.getTelefono());
+        q.setParameter(4, p.getEstado());
+        return q.executeUpdate();
+    }
 
-	@Override
-	public Proveedor obtenerProveedor(int id) {
-		Proveedor proveedor = null;
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_obtenerProveedor(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setInt(1, id);
-			rs = csm.executeQuery();
-			if (rs.next()) {
-				proveedor = new Proveedor();
-				proveedor.setId_proveedor(rs.getInt("id_proveedor"));
-				proveedor.setRuc(rs.getString("ruc"));
-				proveedor.setRazon_social(rs.getString("razon_social"));
-				proveedor.setTelefono(rs.getString("telefono"));
-				proveedor.setEstado(rs.getInt("estado"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return proveedor;
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Proveedor> listarProveedor() {
+        List<Proveedor> lista = new ArrayList<>();
+        List<Object[]> filas = em.createStoredProcedureQuery("sp_listarProveedor").getResultList();
+        for (Object[] f : filas) {
+            lista.add(mapear(f));
+        }
+        return lista;
+    }
 
-	@Override
-	public int eliminarProveedor(int codigo) {
-		int value = 0;
-		Connection cn = null;
-		CallableStatement csm = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_eliminarProveedor(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setInt(1, codigo);
-			value = csm.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return value;
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public Proveedor obtenerProveedor(int id) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_obtenerProveedor");
+        q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        q.setParameter(1, id);
+        List<Object[]> filas = q.getResultList();
+        return filas.isEmpty() ? null : mapear(filas.get(0));
+    }
 
-	@Override
-	public int editarProveedor(Proveedor proveedor) {
-		int value = 0;
-		Connection cn = null;
-		CallableStatement csm = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_actualizarProveedor(?,?,?,?,?)}";
-			csm = cn.prepareCall(sql);
-			csm.setInt(1, proveedor.getId_proveedor());
-			csm.setString(2, proveedor.getRuc());
-			csm.setString(3, proveedor.getRazon_social());
-			csm.setString(4, proveedor.getTelefono());
-			csm.setInt(5, proveedor.getEstado());
-			value = csm.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return value;
-	}
+    @Override
+    public int eliminarProveedor(int id) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_eliminarProveedor");
+        q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        q.setParameter(1, id);
+        return q.executeUpdate();
+    }
 
-	@Override
-	public List<Proveedor> buscarProveedor(String cod) {
-		// Búsqueda por RUC
-		List<Proveedor> listProveedor = new ArrayList<Proveedor>();
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_buscarProveedor(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setString(1, cod);
-			rs = csm.executeQuery();
-			while (rs.next()) {
-				Proveedor proveedor = new Proveedor();
-				proveedor.setId_proveedor(rs.getInt("id_proveedor"));
-				proveedor.setRuc(rs.getString("ruc"));
-				proveedor.setRazon_social(rs.getString("razon_social"));
-				proveedor.setTelefono(rs.getString("telefono"));
-				proveedor.setEstado(rs.getInt("estado"));
-				listProveedor.add(proveedor);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return listProveedor;
-	}
+    @Override
+    public int editarProveedor(Proveedor p) {
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_actualizarProveedor");
+        q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(2, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(3, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(4, String.class, ParameterMode.IN);
+        q.registerStoredProcedureParameter(5, Integer.class, ParameterMode.IN);
+        q.setParameter(1, p.getId_proveedor());
+        q.setParameter(2, p.getRuc());
+        q.setParameter(3, p.getRazon_social());
+        q.setParameter(4, p.getTelefono());
+        q.setParameter(5, p.getEstado());
+        return q.executeUpdate();
+    }
 
-	@Override
-	public List<Proveedor> buscarProveedorByNombre(String nom) {
-		// Búsqueda por razón social
-		List<Proveedor> listProveedor = new ArrayList<Proveedor>();
-		Connection cn = null;
-		CallableStatement csm = null;
-		ResultSet rs = null;
-		try {
-			cn = MysqlConexion.getConexion();
-			String sql = "{call sp_buscarProveedorByNombre(?)}";
-			csm = cn.prepareCall(sql);
-			csm.setString(1, nom);
-			rs = csm.executeQuery();
-			while (rs.next()) {
-				Proveedor proveedor = new Proveedor();
-				proveedor.setId_proveedor(rs.getInt("id_proveedor"));
-				proveedor.setRuc(rs.getString("ruc"));
-				proveedor.setRazon_social(rs.getString("razon_social"));
-				proveedor.setTelefono(rs.getString("telefono"));
-				proveedor.setEstado(rs.getInt("estado"));
-				listProveedor.add(proveedor);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (rs != null) rs.close();
-				if (csm != null) csm.close();
-				if (cn != null) cn.close();
-			} catch (Exception e) { e.printStackTrace(); }
-		}
-		return listProveedor;
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Proveedor> buscarProveedor(String ruc) {
+        List<Proveedor> lista = new ArrayList<>();
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_buscarProveedor");
+        q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+        q.setParameter(1, ruc);
+        List<Object[]> filas = q.getResultList();
+        for (Object[] f : filas) {
+            lista.add(mapear(f));
+        }
+        return lista;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Proveedor> buscarProveedorByNombre(String texto) {
+        List<Proveedor> lista = new ArrayList<>();
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_buscarProveedorByNombre");
+        q.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+        q.setParameter(1, texto);
+        List<Object[]> filas = q.getResultList();
+        for (Object[] f : filas) {
+            lista.add(mapear(f));
+        }
+        return lista;
+    }
+
+    // sp_listarProveedor / sp_obtenerProveedor / sp_buscarProveedor(ByNombre):
+    // id_proveedor, ruc, razon_social, telefono, estado
+    private Proveedor mapear(Object[] f) {
+        Proveedor p = new Proveedor();
+        p.setId_proveedor(((Number) f[0]).intValue());
+        p.setRuc(f[1] == null ? null : String.valueOf(f[1]));
+        p.setRazon_social(f[2] == null ? null : String.valueOf(f[2]));
+        p.setTelefono(f[3] == null ? null : String.valueOf(f[3]));
+        p.setEstado(f[4] == null ? 0 : ((Number) f[4]).intValue());
+        return p;
+    }
 }
