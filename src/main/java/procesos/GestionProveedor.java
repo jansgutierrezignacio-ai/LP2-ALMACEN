@@ -1,14 +1,20 @@
 package procesos;
 
 import java.sql.CallableStatement;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+
 import interfaces.IntProveedor;
 import modelo.Proveedor;
 import util.MysqlConexion;
+
+@Service 
 
 public class GestionProveedor implements IntProveedor {
 

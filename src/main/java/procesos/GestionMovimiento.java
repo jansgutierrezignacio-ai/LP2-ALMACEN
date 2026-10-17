@@ -1,14 +1,19 @@
 package procesos;
 
+
 import java.sql.Connection;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import interfaces.IntMovimiento;
 import modelo.Movimiento;
 import util.MysqlConexion;
+
+@Service
 
 public class GestionMovimiento implements IntMovimiento{
 
