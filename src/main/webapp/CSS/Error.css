@@ -1,0 +1,77 @@
+@charset "UTF-8";
+/* ===== Error.css =====
+   Estilos compartidos por las paginas de error (404, 500, 403 y genericas).
+   Mantiene la misma estetica que el login y msgError.jsp: tarjeta blanca
+   sobre degradado morado. */
+body {
+    margin: 0;
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-card {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+}
+
+.error-card .error-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Codigo grande del estado (404, 500, ...) */
+.error-card .error-code {
+    font-size: 4.5rem;
+    font-weight: 600;
+    line-height: 1;
+    margin: 0;
+}
+
+.error-card h3 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.error-card .error-detail {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+/* Colores por tipo de error */
+.error-404 .error-icon,
+.error-404 .error-code { color: #f0ad4e; }   /* alerta / no encontrado */
+.error-500 .error-icon,
+.error-500 .error-code { color: #dc3545; }   /* error de servidor */
+.error-403 .error-icon,
+.error-403 .error-code { color: #764ba2; }   /* acceso denegado */
+.error-generico .error-icon,
+.error-generico .error-code { color: #6c757d; }
+
+/* Botones (misma paleta que el login) */
+.error-card .btn-primary {
+    background: #764ba2;
+    border: none;
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.error-card .btn-primary:hover {
+    background: #5a3782;
+    transform: translateY(-1px);
+}
+.error-card .btn-outline-secondary {
+    border-radius: 8px;
+    padding: 0.65rem 1.25rem;
+    font-weight: 600;
+}

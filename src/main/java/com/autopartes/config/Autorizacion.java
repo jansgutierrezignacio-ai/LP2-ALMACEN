@@ -33,6 +33,19 @@ public final class Autorizacion {
     }
 
     /**
+     * Indica si la ruta corresponde a un módulo del sistema (conocido por las
+     * reglas de autorización). Las rutas que no son ningún módulo conocido no
+     * se interceptan aquí: se dejan pasar para que Spring resuelva (y, si no
+     * hay manejador, genere el 404 con su página de error).
+     *
+     * @param path ruta servlet (sin el contexto)
+     * @return {@code true} si la ruta pertenece a un módulo conocido
+     */
+    public static boolean esModuloConocido(String path) {
+        return moduloDe(path) != null;
+    }
+
+    /**
      * Indica si el rol indicado puede ejecutar la operación solicitada sobre la ruta.
      *
      * @param path   ruta servlet (sin el contexto de la aplicación), por ejemplo {@code /productos}

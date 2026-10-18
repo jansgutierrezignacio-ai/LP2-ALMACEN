@@ -21,13 +21,8 @@
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 
-    <error-page>
-        <error-code>404</error-code>
-        <location>/msgError.jsp</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/msgError.jsp</location>
-    </error-page>
+    <!-- El manejo de errores (404, 500, 403, ...) lo resuelve Spring via
+         ErrorControllerPersonalizado (mapea /error). Antes habia <error-page>
+         aqui apuntando a msgError.jsp; se quitaron para no duplicar el flujo. -->
 
 </web-app>

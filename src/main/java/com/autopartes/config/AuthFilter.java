@@ -51,7 +51,10 @@ public class AuthFilter extends OncePerRequestFilter {
         }
 
         String type = request.getParameter("type");
-        if (!Autorizacion.permite(path, type, usuario.getIdTipo())) {
+        // Solo se aplica el control de acceso a módulos conocidos. Las rutas
+        // desconocidas se dejan pasar para que Spring genere el 404 (con su
+        // página de error) en lugar de redirigirlas al panel.
+        if (Autorizacion.esModuloConocido(path) && !Autorizacion.permite(path, type, usuario.getIdTipo())) {
             response.sendRedirect(ctx + "/inicio");
             return;
         }
@@ -59,12 +62,13 @@ public class AuthFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    /** Rutas accesibles sin sesión: login, recursos estáticos y error de credenciales. */
+    /** Rutas accesibles sin sesión: login, recursos estáticos, error de credenciales y la página de error. */
     private boolean esPublica(String path) {
         return path.isEmpty()
                 || path.equals("/")
                 || path.equals("/login")
                 || path.equals("/errorLogin.jsp")
+                || path.equals("/error")
                 || path.startsWith("/CSS/")
                 || path.startsWith("/JS/")
                 || path.startsWith("/img/")
