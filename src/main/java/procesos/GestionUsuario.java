@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,14 +20,28 @@ public class GestionUsuario implements IntUsuario {
     private EntityManager em;
 
     @Override
+    @SuppressWarnings("unchecked")
     public Usuario login(String username, String clave) {
-        // Consulta JPQL parametrizada sobre la entidad Usuario (tabla Usuarios).
-        TypedQuery<Usuario> q = em.createQuery(
-                "SELECT u FROM Usuario u WHERE u.username = :username AND u.clave = :clave", Usuario.class);
-        q.setParameter("username", username);
-        q.setParameter("clave", clave);
-        List<Usuario> resultado = q.getResultList();
-        return resultado.isEmpty() ? null : resultado.get(0);
+        // Consulta nativa con el JOIN a TiposUsuario para poblar nombreTipo (@Transient),
+        // que el dashboard muestra en la barra superior junto al username.
+        javax.persistence.Query q = em.createNativeQuery(
+                "SELECT u.idUsuario, u.username, u.clave, u.idTipo, t.descripcion "
+              + "FROM Usuarios u INNER JOIN TiposUsuario t ON u.idTipo = t.idTipo "
+              + "WHERE u.username = ?1 AND u.clave = ?2");
+        q.setParameter(1, username);
+        q.setParameter(2, clave);
+        List<Object[]> filas = q.getResultList();
+        if (filas.isEmpty()) {
+            return null;
+        }
+        Object[] f = filas.get(0);
+        Usuario u = new Usuario();
+        u.setIdUsuario(((Number) f[0]).intValue());
+        u.setUsername((String) f[1]);
+        u.setClave((String) f[2]);
+        u.setIdTipo(((Number) f[3]).intValue());
+        u.setNombreTipo(f[4] == null ? null : String.valueOf(f[4]));
+        return u;
     }
 
     @Override
