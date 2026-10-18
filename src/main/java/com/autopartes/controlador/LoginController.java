@@ -38,8 +38,9 @@ public class LoginController {
         return "errorLogin";
     }
 
-    // Cierra la sesión y regresa al formulario de acceso
-    @GetMapping("/logout")
+    // Cierra la sesión y regresa al formulario de acceso.
+    // Se atiende por POST (no por enlace) para evitar el cierre de sesión por CSRF.
+    @PostMapping("/logout")
     public String cerrarSesion(HttpSession session) {
         if (session != null) {
             session.invalidate();

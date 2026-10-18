@@ -127,7 +127,9 @@ public class ProductoController {
         return "msgError";
     }
 
-    @GetMapping(value = "/productos", params = "type=eliminar")
+    // La eliminación se atiende por POST (no por GET) para evitar operaciones
+    // destructivas mediante enlaces o precarga del navegador (CSRF).
+    @PostMapping(value = "/productos", params = "type=eliminar")
     public String eliminar(@RequestParam("id") int id, HttpSession session, Model model) {
         int value = productoService.eliminarProducto(id);
         if (value == 1) {

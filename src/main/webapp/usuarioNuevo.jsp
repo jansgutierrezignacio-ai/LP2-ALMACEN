@@ -123,7 +123,7 @@ $(document).ready(function() {
                 <hr>
                 
                 <div class="d-flex justify-content-between">
-                    <a href="login.jsp" class="btn btn-secondary">Regresar</a>
+                    <a href="usuarios" class="btn btn-secondary">Regresar</a>
                     <button type="submit" class="btn btn-success">Registrar Usuario</button>
                 </div>
             </form>

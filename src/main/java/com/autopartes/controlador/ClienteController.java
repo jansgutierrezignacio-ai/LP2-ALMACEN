@@ -114,7 +114,8 @@ public class ClienteController {
         return "msgError";
     }
 
-    @GetMapping(value = "/clientes", params = "type=eliminar")
+    // Eliminación por POST (no por enlace) para evitar operaciones destructivas por CSRF.
+    @PostMapping(value = "/clientes", params = "type=eliminar")
     public String eliminar(@RequestParam("id") int id, HttpSession session, Model model) {
         int value = clienteService.eliminarCliente(id);
         if (value == 1) {

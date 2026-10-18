@@ -112,7 +112,8 @@ public class ProveedorController {
         return "msgError";
     }
 
-    @GetMapping(value = "/proveedores", params = "type=eliminar")
+    // Eliminación por POST (no por enlace) para evitar operaciones destructivas por CSRF.
+    @PostMapping(value = "/proveedores", params = "type=eliminar")
     public String eliminar(@RequestParam("id") int id, HttpSession session, Model model) {
         int value = proveedorService.eliminarProveedor(id);
         if (value == 1) {

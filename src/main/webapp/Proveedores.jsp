@@ -23,19 +23,7 @@
 <body>
 <div class="d-flex">
 
-    <!-- Sidebar -->
-    <div class="sidebar p-3">
-        <h4 class="text-white mb-4">Inventario</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="inicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="clientes?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
-            <li class="nav-item"><a class="nav-link active" href="proveedores?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link" href="productos?type=listar"><i class="bi bi-box"></i> Productos</a></li>
-            <li class="nav-item"><a class="nav-link" href="reportes?type=listar"><i class="bi bi-graph-up-arrow"></i> Reportes</a></li>
-            <li class="nav-item"><a class="nav-link" href="movimientos?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>   
-            <li class="nav-item"><a class="nav-link" href="logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
-        </ul>
-    </div>
+    <%@ include file="menu.jsp" %>
 
     <div class="content flex-grow-1 p-3">
         <div class="topbar d-flex justify-content-between align-items-center px-4">
@@ -94,8 +82,11 @@
 								</td>
 								<td>
 									<a href="proveedores?type=infoEdit&id=${p.id_proveedor}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-									<a href="proveedores?type=eliminar&id=${p.id_proveedor}" class="btn btn-sm btn-danger"
-									   onclick="return confirm('¿Eliminar este proveedor?');"><i class="bi bi-trash"></i></a>
+									<form action="proveedores" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este proveedor?');">
+										<input type="hidden" name="type" value="eliminar"/>
+										<input type="hidden" name="id" value="${p.id_proveedor}"/>
+										<button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+									</form>
 								</td>
 							</tr>
 						</c:forEach>

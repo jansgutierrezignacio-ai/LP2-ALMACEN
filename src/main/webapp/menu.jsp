@@ -1,0 +1,49 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%--
+    Menú lateral reutilizable. Se incluye en las vistas del sistema con
+    <%@ include file="menu.jsp" %> y muestra únicamente los módulos que el rol
+    del usuario en sesión (idTipo: 1=Administrador, 2=Vendedor, 3=Almacenero)
+    tiene permitidos. El módulo activo se deduce de la URI solicitada.
+--%>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:set var="uri" value="${pageContext.request.requestURI}" />
+<c:set var="rol" value="${sessionScope.usuario.idTipo}" />
+<c:set var="esAdmin" value="${rol == 1}" />
+<c:set var="esVendedor" value="${rol == 2}" />
+<c:set var="esAlmacenero" value="${rol == 3}" />
+
+<div class="sidebar p-3">
+    <h4 class="text-white mb-4">Inventario</h4>
+    <ul class="nav flex-column">
+        <li class="nav-item"><a class="nav-link ${fn:contains(uri, '/inicio') ? 'active' : ''}" href="${ctx}/inicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+
+        <c:if test="${esAdmin || esVendedor}">
+            <li class="nav-item"><a class="nav-link ${fn:contains(uri, '/clientes') ? 'active' : ''}" href="${ctx}/clientes?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
+        </c:if>
+
+        <c:if test="${esAdmin || esAlmacenero}">
+            <li class="nav-item"><a class="nav-link ${fn:contains(uri, '/proveedores') ? 'active' : ''}" href="${ctx}/proveedores?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
+        </c:if>
+
+        <li class="nav-item"><a class="nav-link ${fn:contains(uri, '/productos') ? 'active' : ''}" href="${ctx}/productos?type=listar"><i class="bi bi-box"></i> Productos</a></li>
+
+        <c:if test="${esAdmin || esVendedor}">
+            <li class="nav-item"><a class="nav-link ${fn:contains(uri, '/reportes') ? 'active' : ''}" href="${ctx}/reportes?type=listar"><i class="bi bi-graph-up-arrow"></i> Reporte</a></li>
+        </c:if>
+
+        <c:if test="${esAdmin || esAlmacenero}">
+            <li class="nav-item"><a class="nav-link ${fn:contains(uri, '/movimientos') ? 'active' : ''}" href="${ctx}/movimientos?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>
+        </c:if>
+
+        <c:if test="${esAdmin}">
+            <li class="nav-item"><a class="nav-link ${fn:contains(uri, '/usuarios') ? 'active' : ''}" href="${ctx}/usuarios"><i class="bi bi-person-badge"></i> Usuarios</a></li>
+        </c:if>
+
+        <li class="nav-item">
+            <form action="${ctx}/logout" method="post" class="m-0">
+                <button type="submit" class="nav-link w-100 text-start border-0 bg-transparent"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+            </form>
+        </li>
+    </ul>
+</div>

@@ -27,19 +27,7 @@
 <body>
 <div class="d-flex">
 
-    <!-- Sidebar -->
-    <div class="sidebar p-3">
-        <h4 class="text-white mb-4">Inventario</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="inicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="clientes?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
-            <li class="nav-item"><a class="nav-link" href="proveedores?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link" href="productos?type=listar"><i class="bi bi-box"></i> Productos</a></li>
-            <li class="nav-item"><a class="nav-link" href="reportes?type=listar"><i class="bi bi-graph-up-arrow"></i> Reporte</a></li>
-            <li class="nav-item"><a class="nav-link active" href="movimientos?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>
-            <li class="nav-item"><a class="nav-link" href="logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
-        </ul>
-    </div>
+    <%@ include file="menu.jsp" %>
 
     <!-- Contenido -->
     <div class="content flex-grow-1 p-3">

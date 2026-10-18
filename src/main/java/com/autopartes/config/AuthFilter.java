@@ -1,8 +1,6 @@
 package com.autopartes.config;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -13,71 +11,64 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import modelo.Usuario;
+
+/**
+ * Filtro de autenticación y autorización. Intercepta una sola vez cada petición y:
+ * <ol>
+ *   <li>deja pasar las rutas públicas (login y recursos estáticos);</li>
+ *   <li>exige una sesión autenticada (atributo {@code usuario});</li>
+ *   <li>verifica, mediante {@link Autorizacion}, que el rol del usuario permita
+ *       ejecutar la operación solicitada (control de acceso por rol).</li>
+ * </ol>
+ * Si no hay sesión, redirige al login; si el rol no tiene permiso, regresa al panel.
+ */
 @Component
 public class AuthFilter extends OncePerRequestFilter {
-
-    private static final List<String> RUTAS_PUBLICAS = Arrays.asList(
-            "/login",
-            "/errorLogin.jsp",
-            "/usuarios/nuevo",
-            "/usuarios",
-            "/CSS/",
-            "/JS/",
-            "/img/",
-            "/IMG/",
-            "/favicon.ico"
-    );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String ctx = request.getContextPath();
-        String uri = request.getRequestURI();
-        String path = uri.substring(ctx.length());
+        String path = request.getRequestURI().substring(ctx.length());
 
-        boolean esRecursoEstatico = path.startsWith("/CSS/")
-                || path.startsWith("/JS/")
-                || path.startsWith("/img/")
-                || path.startsWith("/IMG/");
-
-        boolean esPublica = path.equals("/") || path.isEmpty() || esRecursoEstatico
-                || path.equals("/login")
-                || path.startsWith("/login/")
-                || path.equals("/errorLogin.jsp")
-                || path.equals("/usuarios/nuevo")
-                || path.equals("/usuarios");
-
-        // Permitir solicitudes GET y POST a /login y a /usuarios con parámetros
-        if (esPublica && path.equals("/login") && "GET".equalsIgnoreCase(request.getMethod())) {
-            chain.doFilter(request, response);
-            return;
-        }
-        if (esPublica && path.equals("/login") && "POST".equalsIgnoreCase(request.getMethod())) {
-            chain.doFilter(request, response);
-            return;
-        }
-        if (path.equals("/usuarios") && ("GET".equalsIgnoreCase(request.getMethod()) || "POST".equalsIgnoreCase(request.getMethod()))) {
-            // Permitir /usuarios (listar/registrar) por público? Origen: /ServletUsuario era público.
-            // Mantenemos comportamiento original para no romper el flujo de registro.
-            chain.doFilter(request, response);
-            return;
-        }
-        if (path.equals("/usuarios/nuevo") && "GET".equalsIgnoreCase(request.getMethod())) {
-            chain.doFilter(request, response);
-            return;
-        }
-        if (esRecursoEstatico) {
+        if (esPublica(path)) {
             chain.doFilter(request, response);
             return;
         }
 
         HttpSession session = request.getSession(false);
-        boolean autenticado = session != null && session.getAttribute("usuario") != null;
-
-        if (autenticado) {
-            chain.doFilter(request, response);
-        } else {
-            response.sendRedirect(ctx.isEmpty() ? "/login" : (ctx + "/login"));
+        Usuario usuario = session == null ? null : (Usuario) session.getAttribute("usuario");
+        if (usuario == null) {
+            response.sendRedirect(ctx + "/login");
+            return;
         }
+
+        // El cierre de sesión está disponible para cualquier usuario autenticado.
+        if ("/logout".equals(path)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        String type = request.getParameter("type");
+        if (!Autorizacion.permite(path, type, usuario.getIdTipo())) {
+            response.sendRedirect(ctx + "/inicio");
+            return;
+        }
+
+        chain.doFilter(request, response);
+    }
+
+    /** Rutas accesibles sin sesión: login, recursos estáticos y error de credenciales. */
+    private boolean esPublica(String path) {
+        return path.isEmpty()
+                || path.equals("/")
+                || path.equals("/login")
+                || path.equals("/errorLogin.jsp")
+                || path.startsWith("/CSS/")
+                || path.startsWith("/JS/")
+                || path.startsWith("/img/")
+                || path.startsWith("/IMG/")
+                || path.equals("/favicon.ico");
     }
 }

@@ -24,18 +24,7 @@
 <body>
 <div class="d-flex">
 
-    <div class="sidebar p-3">
-        <h4 class="text-white mb-4">Inventario</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="inicio"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="clientes?type=listar"><i class="bi bi-people"></i> Clientes</a></li>
-            <li class="nav-item"><a class="nav-link" href="proveedores?type=listar"><i class="bi bi-truck"></i> Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link active" href="productos?type=listar"><i class="bi bi-box"></i> Productos</a></li>
-            <li class="nav-item"><a class="nav-link" href="reportes?type=listar"><i class="bi bi-graph-up-arrow"></i> Reportes</a></li>
-            <li class="nav-item"><a class="nav-link" href="movimientos?type=listar"><i class="bi bi-clock-history"></i> Movimientos</a></li>  
-            <li class="nav-item"><a class="nav-link" href="logout"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</a></li>
-        </ul>
-    </div>
+    <%@ include file="menu.jsp" %>
 
     <div class="content flex-grow-1 p-3">
         <div class="topbar d-flex justify-content-between align-items-center px-4">
@@ -54,9 +43,11 @@
 			<div class="nav-link ${activeTab != 'agregar' ? 'active' : ''} card card-gray text-center p-3" data-bs-toggle="pill" data-bs-target="#listar">
     			<i class="bi bi-card-list fs-3"></i><div>Listar Producto</div>
 			</div>
+			<c:if test="${sessionScope.usuario.idTipo != 2}">
 			<div class="nav-link ${activeTab == 'agregar' ? 'active' : ''} card card-gray text-center p-3" data-bs-toggle="pill" data-bs-target="#agregar">
     			<i class="bi bi-plus-circle fs-3"></i><div>Agregar Producto</div>
 			</div>
+			</c:if>
 			<div class="nav-link card card-gray text-center p-3" data-bs-toggle="pill" data-bs-target="#consultar">
     			<i class="bi bi-search fs-3"></i><div>Consultar Producto</div>
 			</div>
@@ -99,9 +90,19 @@
 								</td>
 								<td>${p.nombreProveedor != null ? p.nombreProveedor : p.idProveedor}</td>
 								<td>
-									<a href="productos?type=infoEdit&id=${p.idProducto}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
-									<a href="productos?type=eliminar&id=${p.idProducto}" class="btn btn-sm btn-danger"
-									   onclick="return confirm('¿Eliminar este producto?');"><i class="bi bi-trash"></i></a>
+									<c:choose>
+										<c:when test="${sessionScope.usuario.idTipo == 2}">
+											<span class="text-muted">—</span>
+										</c:when>
+										<c:otherwise>
+											<a href="productos?type=infoEdit&id=${p.idProducto}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
+											<form action="productos" method="post" class="d-inline" onsubmit="return confirm('¿Eliminar este producto?');">
+												<input type="hidden" name="type" value="eliminar"/>
+												<input type="hidden" name="id" value="${p.idProducto}"/>
+												<button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+											</form>
+										</c:otherwise>
+									</c:choose>
 								</td>
 							</tr>
 						</c:forEach>
