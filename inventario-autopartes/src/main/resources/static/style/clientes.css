@@ -1,0 +1,172 @@
+
+body {
+    background-color: #f4f6f9;
+}
+
+/* Sidebar Lateral Oscuro */
+.sidebar {
+    width: 260px;
+    background-color: #212529 !important;
+    color: #ffffff !important;
+    min-height: 100vh;
+}
+
+.sidebar h4 {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.sidebar .nav-link {
+    color: #adb5bd !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.sidebar .nav-link:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: #ffffff !important;
+    background-color: #0d6efd !important;
+}
+
+/* Topbar Superior */
+.topbar {
+    height: 70px;
+    background-color: #343a40 !important;
+    color: #ffffff !important;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    padding: 0 1.5rem;
+}
+
+.topbar h5, 
+.topbar span, 
+.topbar i {
+    color: #ffffff !important;
+}
+
+/* Tarjetas de navegación superior (pestañas / nav-pills) - Evita que se estiren de más */
+.nav-pills {
+    gap: 1rem;
+}
+
+.nav-pills .card {
+    flex: 0 0 auto; /* Evita que las tarjetas se estiren ocupando todo el ancho */
+    min-width: 190px;
+    max-width: 220px;
+    cursor: pointer;
+    border: 1px solid #dcdfe6;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-pills .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Textos e íconos de las tarjetas */
+.nav-pills .nav-link,
+.nav-pills .nav-link div,
+.nav-pills .nav-link i,
+.nav-pills .nav-link span {
+    color: #212529 !important;
+    font-weight: 600;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .nav-link.active div,
+.nav-pills .nav-link.active i,
+.nav-pills .nav-link.active span {
+    background-color: #0d6efd !important;
+    color: #ffffff !important;
+    border-color: #0d6efd;
+}
+
+.nav-pills .nav-link.active {
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
+}
+
+/* Contenedor Principal de las Pestañas (Tab-Content) */
+.tab-content {
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    margin-top: 1rem;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.08);
+    color: #212529;
+}
+
+/* Formularios estructurados y proporcionados (Evita inputs demasiado alargados) */
+.tab-pane form {
+    max-width: 100%;
+}
+
+.tab-pane form .form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+}
+
+.tab-pane form .form-control {
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #ced4da;
+    background-color: #fdfdfd;
+    color: #212529;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.tab-pane form .form-control:focus {
+    background-color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+/* Tabla de Clientes */
+.table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    margin-top: 1rem;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: #212529 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    padding: 12px 10px;
+    border-bottom: none;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f4f9;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    padding: 10px;
+    color: #212529;
+    font-size: 0.95rem;
+}

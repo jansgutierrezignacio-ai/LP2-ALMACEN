@@ -1,0 +1,109 @@
+
+body {
+    background-color: #f4f6f9;
+}
+
+/* Sidebar Lateral Oscuro */
+.sidebar {
+    width: 260px;
+    background-color: #212529 !important;
+    color: #ffffff !important;
+    min-height: 100vh;
+}
+
+.sidebar h4 {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.sidebar .nav-link {
+    color: #adb5bd !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.sidebar .nav-link:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: #ffffff !important;
+    background-color: #0d6efd !important;
+}
+
+/* Topbar Superior */
+.topbar {
+    height: 70px;
+    background-color: #343a40 !important;
+    color: #ffffff !important;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 0 1.5rem;
+}
+
+.topbar h5, 
+.topbar span, 
+.topbar i {
+    color: #ffffff !important;
+}
+
+/* Contenedor del Dashboard */
+.container-fluid {
+    padding: 0 1rem;
+}
+
+/* Estilos base para las Tarjetas del Dashboard (Cards) */
+.card-action {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-action:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-action i {
+    opacity: 0.85;
+    margin-bottom: 0.5rem;
+}
+
+.card-action h6 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-bottom: 0.4rem;
+}
+
+.card-action h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Colores personalizados para cada tarjeta del Dashboard */
+.card-blue {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+}
+
+.card-orange {
+    background: linear-gradient(135deg, #fd7e14, #e8590c);
+}
+
+.card-darkblue {
+    background: linear-gradient(135deg, #0dcaf0, #0aa2c0);
+}
+
+.card-brown {
+    background: linear-gradient(135deg, #6c757d, #495057);
+}
+
+.card-gray {
+    background: linear-gradient(135deg, #343a40, #212529);
+}
