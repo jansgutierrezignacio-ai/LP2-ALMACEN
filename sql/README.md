@@ -60,6 +60,11 @@ podman exec -i cibertec-mysql mysql -uroot -p"$MYSQL_ROOT_PASSWORD" < sql/BD_ALM
 mysql -h 127.0.0.1 -P 3306 -u root -p < sql/BD_ALMACEN.sql
 ```
 
+> El script ya incluye `SET NAMES utf8mb4;` al inicio, así que los acentos se
+> importan bien aunque el cliente `mysql` arranque en latin1 (lo habitual si el
+> locale no es UTF-8). Si usas una herramienta gráfica, selecciona **UTF-8** como
+> codificación al importar; de lo contrario verías "BaterÃ­a" en vez de "Batería".
+
 Al final del script se imprimen dos verificaciones: el conteo de filas por tabla y
 la lista de procedimientos almacenados creados.
 

@@ -23,6 +23,13 @@
 --   fiel al script original y al uso real del código.
 -- ═════════════════════════════════════════════════════════════════════════════
 
+-- Forzar utf8mb4 en la sesión del cliente. Sin esto, al importar con el cliente
+-- mysql (que arranca en latin1 si el locale no es UTF-8) los acentos del archivo
+-- se reinterpretan byte a byte y quedan doblemente codificados:
+--   "Batería" -> "BaterÃ­a"
+-- Debe ir ANTES de crear/insertar para que los literales se lean bien.
+SET NAMES utf8mb4;
+
 DROP DATABASE IF EXISTS BD_ALMACEN;
 CREATE DATABASE BD_ALMACEN
     CHARACTER SET utf8mb4
