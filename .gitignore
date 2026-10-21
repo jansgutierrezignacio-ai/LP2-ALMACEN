@@ -33,3 +33,7 @@ build/
 
 # 6. Script SQL original del equipo (reemplazado por la reconstruccion sql/BD_ALMACEN.sql)
 sql/BD_Almacen(ProyectoFinal)-ContarReporteVenta.sql
+
+# 7. Informe academico: NO se versiona en este repo (contiene datos que no deben
+#    publicarse). Vive fuera del repositorio, en el directorio padre (LP2_EF/docs).
+/docs/
