@@ -53,7 +53,19 @@
 
                 <p class="text-muted small mb-3">
                     Se muestran todas las ventas. Puedes filtrar por un rango de fechas si lo necesitas.
+                    El PDF admite hasta <fmt:formatNumber value="${maxPdf}" /> ventas por descarga.
                 </p>
+
+                <c:if test="${not empty avisoLimite}">
+                    <div class="alert alert-warning d-flex align-items-start gap-2" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+                        <div>
+                            El reporte tiene <strong><fmt:formatNumber value="${avisoLimite}" /></strong> ventas
+                            y el PDF admite hasta <strong><fmt:formatNumber value="${maxPdf}" /></strong>.
+                            Filtra por un rango de fechas para reducir la descarga.
+                        </div>
+                    </div>
+                </c:if>
 
                 <form action="reportes" method="get" class="row g-3 mb-4">
                     <input type="hidden" name="type" value="listar">
@@ -72,9 +84,19 @@
                         <a href="reportes?type=listar" class="btn btn-outline-secondary w-100"><i class="bi bi-arrow-clockwise"></i> Ver todas</a>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <a href="reportes/pdf?txtFechaInicio=${fInicio}&amp;txtFechaFin=${fFin}" class="btn btn-danger w-100">
-                            <i class="bi bi-file-earmark-pdf-fill"></i> PDF
-                        </a>
+                        <c:choose>
+                            <c:when test="${totalRegistros > maxPdf}">
+                                <span class="btn btn-outline-danger w-100 disabled" aria-disabled="true"
+                                      title="El PDF admite hasta ${maxPdf} ventas. Filtra por fechas.">
+                                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                                </span>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="reportes/pdf?txtFechaInicio=${fInicio}&amp;txtFechaFin=${fFin}" class="btn btn-danger w-100">
+                                    <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                                </a>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </form>
 

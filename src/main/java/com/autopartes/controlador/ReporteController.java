@@ -3,6 +3,7 @@ package com.autopartes.controlador;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,15 @@ public class ReporteController {
 
     /** Ventas por pagina en el listado del reporte. */
     private static final int TAMANO_PAGINA = 10;
+
+    /**
+     * Tope de filas para generar el PDF. JasperReports arma el documento
+     * completo en memoria, asi que se acota. Medido en este equipo: 20.000
+     * ventas ~ 466 paginas, ~3,6 MB, ~7,6 s y un pico de ~240 MB de RAM;
+     * con 24.000 ya sube a ~270 MB y con 50.000 a ~450 MB. Se deja en 20.000
+     * para no pasar de ~300 MB de consumo extra.
+     */
+    private static final int MAX_FILAS_PDF = 20000;
 
     @Autowired
     private IntReporte reporteService;
@@ -43,6 +53,7 @@ public class ReporteController {
     public String listar(@RequestParam(value = "txtFechaInicio", required = false) String fechaInicio,
                          @RequestParam(value = "txtFechaFin", required = false) String fechaFin,
                          @RequestParam(value = "pagina", required = false, defaultValue = "1") int pagina,
+                         @RequestParam(value = "limite", required = false) Integer limite,
                          Model model) {
         boolean conFiltro = fechaInicio != null && !fechaInicio.trim().isEmpty()
                 && fechaFin != null && !fechaFin.trim().isEmpty();
@@ -67,6 +78,9 @@ public class ReporteController {
         model.addAttribute("paginaActual", paginaActual);
         model.addAttribute("totalPaginas", totalPaginas);
         model.addAttribute("totalRegistros", totalRegistros);
+        model.addAttribute("maxPdf", MAX_FILAS_PDF);
+        // Si se llega aquí tras rechazar un PDF demasiado grande, se muestra el aviso.
+        model.addAttribute("avisoLimite", limite);
         return "Reporte";
     }
 
@@ -86,12 +100,31 @@ public class ReporteController {
     @GetMapping("/reportes/pdf")
     public void descargarPorFechas(@RequestParam(value = "txtFechaInicio", required = false) String fechaInicio,
                                    @RequestParam(value = "txtFechaFin", required = false) String fechaFin,
+                                   HttpServletRequest request,
                                    HttpServletResponse response) throws IOException {
         boolean conFiltro = fechaInicio != null && !fechaInicio.trim().isEmpty()
                 && fechaFin != null && !fechaFin.trim().isEmpty();
+
+        // Sin filtro se cuenta ANTES de consultar: si hay miles de ventas no se
+        // materializan solo para descubrir que superan el tope.
+        if (!conFiltro) {
+            int totalVentas = reporteService.contarReporteVenta();
+            if (totalVentas > MAX_FILAS_PDF) {
+                response.sendRedirect(urlAvisoLimite(request, totalVentas, null, null));
+                return;
+            }
+        }
+
         List<Reporte> datos = conFiltro
                 ? reporteService.listarReportePorFechas(fechaInicio, fechaFin)
                 : reporteService.listarTodasLasVentas();
+
+        // Con filtro, el único modo de saber el tamaño es la lista ya cargada.
+        if (datos.size() > MAX_FILAS_PDF) {
+            response.sendRedirect(urlAvisoLimite(request, datos.size(), fechaInicio, fechaFin));
+            return;
+        }
+
         // La plantilla muestra "Del <inicio> al <fin>"; con "-" imprime "Todas las ventas".
         String etiquetaInicio = conFiltro ? fechaInicio : "-";
         String etiquetaFin = conFiltro ? fechaFin : "-";
@@ -100,6 +133,22 @@ public class ReporteController {
                 ? "reporte_ventas_" + fechaInicio + "_" + fechaFin + ".pdf"
                 : "reporte_ventas_todas.pdf";
         enviarPdf(response, pdf, nombre);
+    }
+
+    /**
+     * Vuelve al listado con un aviso de que el PDF supera el tope. Se conserva
+     * el rango de fechas para que el usuario solo tenga que ajustarlo.
+     */
+    private String urlAvisoLimite(HttpServletRequest request, int total, String inicio, String fin) {
+        StringBuilder url = new StringBuilder(request.getContextPath());
+        url.append("/reportes?type=listar&limite=").append(total);
+        if (inicio != null && !inicio.trim().isEmpty()) {
+            url.append("&txtFechaInicio=").append(inicio);
+        }
+        if (fin != null && !fin.trim().isEmpty()) {
+            url.append("&txtFechaFin=").append(fin);
+        }
+        return url.toString();
     }
 
     // Descarga en PDF del detalle de una venta (JasperReports).
