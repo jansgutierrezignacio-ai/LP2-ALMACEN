@@ -8,7 +8,19 @@
     tiene permitidos. El módulo activo se deduce de la URI solicitada.
 --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-<c:set var="uri" value="${pageContext.request.requestURI}" />
+<%--
+    Spring MVC resuelve la vista con un forward interno al JSP, así que dentro
+    de la vista `pageContext.request.requestURI` ya apunta al propio .jsp
+    (p. ej. "/Inicio.jsp") y no a la URL pedida. Para marcar la sección activa
+    se usa la URI original que guarda el forward; si no existe (acceso directo
+    al JSP), se cae al requestURI normal. Se pasa a minúsculas para comparar
+    sin depender de mayúsculas.
+--%>
+<c:set var="uri" value="${requestScope['javax.servlet.forward.request_uri']}" />
+<c:if test="${empty uri}">
+    <c:set var="uri" value="${pageContext.request.requestURI}" />
+</c:if>
+<c:set var="uri" value="${fn:toLowerCase(uri)}" />
 <c:set var="rol" value="${sessionScope.usuario.idTipo}" />
 <c:set var="esAdmin" value="${rol == 1}" />
 <c:set var="esVendedor" value="${rol == 2}" />

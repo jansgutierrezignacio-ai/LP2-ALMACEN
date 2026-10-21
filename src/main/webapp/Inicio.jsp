@@ -30,7 +30,7 @@
     <%@ include file="menu.jsp" %>
 
     <!-- Contenido -->
-    <div class="content flex-grow-1">
+    <div class="content flex-grow-1 p-3">
 
         <!-- Topbar -->
         <div class="topbar d-flex justify-content-between align-items-center px-4 mb-4">
@@ -41,7 +41,7 @@
             </span>
         </div>
 
-        <div class="container-fluid mt-4">
+        <div class="container-fluid">
 
             <!-- Cards -->
             <div class="row g-3">

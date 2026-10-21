@@ -19,7 +19,7 @@
 
     <div class="content flex-grow-1 p-3">
         
-        <div class="topbar d-flex justify-content-between align-items-center mb-4">
+        <div class="topbar d-flex justify-content-between align-items-center px-4 mb-4">
             <h5 class="m-0"><i class="bi bi-graph-up-arrow me-2"></i>Reportes</h5>
             <span class="badge-role">
             	<i class="bi bi-person-circle me-1"></i>

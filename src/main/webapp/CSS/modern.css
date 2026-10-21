@@ -52,16 +52,23 @@ body {
     gap: 12px;
 }
 
+/* Hover: solo se aclara el fondo del boton completo. Sin desplazamiento, para que
+   el icono no se salga del recuadro (antes habia translateX(4px) sobre todo el enlace). */
 .sidebar .nav-link:hover {
     color: #ffffff;
     background-color: rgba(255, 255, 255, 0.08);
-    transform: translateX(4px);
 }
 
+/* Seccion activa: se mantiene resaltada y no se desplaza. */
 .sidebar .nav-link.active {
     color: #ffffff;
     background: linear-gradient(135deg, #2563eb, #1d4ed8);
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    font-weight: 600;
+}
+
+.sidebar .nav-link.active:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
 }
 
 /* ===== Barra superior ===== */
@@ -208,11 +215,13 @@ body {
 
 .card-action i {
     opacity: 0.85;
-    transition: transform 0.3s ease;
+    transition: opacity 0.3s ease;
 }
 
+/* En hover solo se aviva el icono; no se escala para que no se desalinee con el
+   texto ni se salga de la tarjeta (antes habia scale(1.1)). */
 .card-action:hover i {
-    transform: scale(1.1);
+    opacity: 1;
 }
 
 .card-action h6 {
