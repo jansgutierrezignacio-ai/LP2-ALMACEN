@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Reporte 2: Detalle de una venta (sp_ReporteDetalleVenta).
+     Relleno con JRBeanCollectionDataSource a partir de modelo.Reporte. -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="detalle_venta"
+              pageWidth="595" pageHeight="842" columnWidth="555"
+              leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+
+    <parameter name="pIdVenta" class="java.lang.Integer"/>
+
+    <field name="nombreProducto" class="java.lang.String"/>
+    <field name="cantidad" class="java.lang.Integer"/>
+    <field name="precioUnit" class="java.lang.Double"/>
+    <field name="total" class="java.lang.Double"/>
+
+    <variable name="totalGeneral" class="java.lang.Double" calculation="Sum">
+        <variableExpression><![CDATA[$F{total}]]></variableExpression>
+    </variable>
+
+    <title>
+        <band height="74">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="24"/>
+                <textElement textAlignment="Center">
+                    <font fontName="SansSerif" size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Comercial Autopartes SAC]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="26" width="555" height="18"/>
+                <textElement textAlignment="Center">
+                    <font fontName="SansSerif" size="12" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Detalle de la venta]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="0" y="50" width="555" height="16"/>
+                <textElement textAlignment="Center">
+                    <font fontName="SansSerif" size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Venta N. " + $P{pIdVenta}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <columnHeader>
+        <band height="22">
+            <staticText>
+                <reportElement x="0" y="0" width="255" height="22" mode="Opaque" backcolor="#E9ECEF"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Producto]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="255" y="0" width="70" height="22" mode="Opaque" backcolor="#E9ECEF"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Cantidad]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="325" y="0" width="115" height="22" mode="Opaque" backcolor="#E9ECEF"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Precio unit.]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="440" y="0" width="115" height="22" mode="Opaque" backcolor="#E9ECEF"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Subtotal]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="18">
+            <textField isStretchWithOverflow="true">
+                <reportElement x="0" y="0" width="255" height="18"/>
+                <textElement verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{nombreProducto}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="255" y="0" width="70" height="18"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+            </textField>
+            <textField pattern="'S/ '#,##0.00">
+                <reportElement x="325" y="0" width="115" height="18"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{precioUnit}]]></textFieldExpression>
+            </textField>
+            <textField pattern="'S/ '#,##0.00">
+                <reportElement x="440" y="0" width="115" height="18"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="9"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <summary>
+        <band height="44">
+            <staticText>
+                <reportElement x="280" y="10" width="160" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="10" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total de la venta:]]></text>
+            </staticText>
+            <textField pattern="'S/ '#,##0.00">
+                <reportElement x="440" y="10" width="115" height="20"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <font fontName="SansSerif" size="10" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{totalGeneral}]]></textFieldExpression>
+            </textField>
+            <staticText>
+                <reportElement x="0" y="34" width="555" height="10"/>
+                <textElement>
+                    <font fontName="SansSerif" size="8"/>
+                </textElement>
+                <text><![CDATA[Generado por el sistema de almacén - Comercial Autopartes SAC]]></text>
+            </staticText>
+        </band>
+    </summary>
+
+</jasperReport>

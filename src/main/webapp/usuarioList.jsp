@@ -8,14 +8,18 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 <link rel="stylesheet" href="CSS/General.css">
+<link rel="stylesheet" href="CSS/modern.css">
 </head>
 <body>
 <div class="d-flex">
     <%@ include file="menu.jsp" %>
     <div class="content flex-grow-1 p-3">
-        <div class="topbar d-flex justify-content-between align-items-center px-4 mb-3">
-            <h5>Usuarios</h5>
-            <span class="text-white">Usuario: ${sessionScope.usuario.username}</span>
+        <div class="topbar d-flex justify-content-between align-items-center px-4 mb-4">
+            <h5><i class="bi bi-person-badge me-2"></i>Usuarios</h5>
+            <span class="badge-role">
+                <i class="bi bi-person-circle me-1"></i>
+                ${sessionScope.usuario.username} · ${rolNombre}
+            </span>
         </div>
         <c:if test="${not empty mensajeOk}">
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -23,13 +27,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         </c:if>
-        <div class="card p-4 shadow-sm">
+        <div class="card-content">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5>Listado de Usuarios (${cantReg != null ? cantReg : 0})</h5>
             </div>
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
+                <table class="table table-custom table-hover">
+                    <thead>
                         <tr>
                             <th>ID</th>
                             <th>Username</th>

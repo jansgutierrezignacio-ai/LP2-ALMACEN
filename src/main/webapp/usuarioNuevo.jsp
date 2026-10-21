@@ -6,18 +6,20 @@
 <meta charset="UTF-8">
 <title>Gestión de Usuario - Registro</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="CSS/modern.css">
 
 <style>
     body {
-        background-color: #f8f9fa;
+        background-color: #f4f6f9;
         padding-top: 50px;
     }
     .cdr-formulario {
         background: white;
         padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
     }
     label.error {
         color: #dc3545;

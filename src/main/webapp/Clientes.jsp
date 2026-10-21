@@ -14,13 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="CSS/General.css">
-
-    <style>
-    	.nav .card { min-width: 180px; cursor: pointer; border: none; }
-		.nav-link.active { transform: scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-		.nav-link { color: white; }
-		.tab-content { padding: 1.5rem; background: #fff; border-radius: 8px; margin-top: 1rem; }
-    </style>
+    <link rel="stylesheet" href="CSS/modern.css">
 </head>
 <body>
 <div class="d-flex">
@@ -31,9 +25,12 @@
     <div class="content flex-grow-1 p-3">
 
         <!-- Topbar -->
-        <div class="topbar d-flex justify-content-between align-items-center px-4">
-            <h5>Cliente</h5>
-            <span class="text-white">Usuario: ${sessionScope.usuario.username}</span>
+        <div class="topbar d-flex justify-content-between align-items-center px-4 mb-4">
+            <h5><i class="bi bi-people me-2"></i>Clientes</h5>
+            <span class="badge-role">
+            	<i class="bi bi-person-circle me-1"></i>
+            	${sessionScope.usuario.username} · ${rolNombre}
+            </span>
         </div>
 
         <c:if test="${not empty mensajeOk}">
@@ -44,16 +41,16 @@
         </c:if>
 
 		<!-- NavBar Cards -->
-        <div class="nav nav-pills d-flex flex-nowrap overflow-auto gap-3 p-2" role="tablist">
-			<div class="nav-link ${activeTab != 'agregar' ? 'active' : ''} card card-gray text-center p-3" data-bs-toggle="pill" data-bs-target="#listar">
+        <div class="nav nav-pills nav-pills-custom d-flex flex-nowrap overflow-auto gap-3 p-2" role="tablist">
+			<div class="nav-link ${activeTab != 'agregar' ? 'active' : ''} text-center p-3" data-bs-toggle="pill" data-bs-target="#listar">
     			<i class="bi bi-card-list fs-3"></i>
     			<div>Listar Cliente</div>
 			</div>
-			<div class="nav-link ${activeTab == 'agregar' ? 'active' : ''} card card-gray text-center p-3" data-bs-toggle="pill" data-bs-target="#agregar">
+			<div class="nav-link ${activeTab == 'agregar' ? 'active' : ''} text-center p-3" data-bs-toggle="pill" data-bs-target="#agregar">
     			<i class="bi bi-person-plus fs-3"></i>
     			<div>Agregar Cliente</div>
 			</div>
-			<div class="nav-link card card-gray text-center p-3" data-bs-toggle="pill" data-bs-target="#consultar">
+			<div class="nav-link text-center p-3" data-bs-toggle="pill" data-bs-target="#consultar">
     			<i class="bi bi-search fs-3"></i>
     			<div>Consultar Cliente</div>
 			</div>
@@ -73,8 +70,8 @@
 						<a href="clientes?type=listar" class="btn btn-outline-secondary"><i class="bi bi-arrow-clockwise"></i></a>
 					</form>
 				</div>
-				<table class="table table-striped table-hover">
-					<thead class="table-dark">
+				<table class="table table-custom table-hover">
+					<thead>
 						<tr>
 							<th>ID</th><th>DNI</th><th>Nombre</th><th>Apellido</th><th>Teléfono</th><th>Acciones</th>
 						</tr>

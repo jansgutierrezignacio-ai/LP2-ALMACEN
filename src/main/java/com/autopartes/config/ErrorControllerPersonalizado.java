@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * devuelve la vista JSP dedicada correspondiente (error/404, error/500,
  * error/403) o, si no hay página específica, la genérica error/error.
  *
- * Nota: en web.xml se eliminaron los <error-page> para no duplicar el flujo;
- * quien decide la página de error es esta clase.
+ * Nota: no hay web.xml (la configuración vive en Spring Boot y en
+ * application.properties); quien decide la página de error es esta clase.
  */
 @Controller
 public class ErrorControllerPersonalizado implements ErrorController {

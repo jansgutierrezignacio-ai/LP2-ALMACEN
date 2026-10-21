@@ -30,9 +30,9 @@ CREATE DATABASE BD_ALMACEN
 
 USE BD_ALMACEN;
 
-----------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------
 --                                              Tablas
-----------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------
 
 -- Tipos de usuarios (roles) -----------------------------------------------------------------------
 CREATE TABLE TiposUsuario (
@@ -125,9 +125,9 @@ CREATE TABLE Movimientos (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-----------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------
 --                                          Datos semilla
-----------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------
 
 
 -- Roles -------------------------------------------------------------------------------------------
@@ -137,17 +137,19 @@ INSERT INTO TiposUsuario (descripcion) VALUES
     ('Almacenero');
 
 -- Usuarios ----------------------------------------------------------------------------------------
--- Originales del script (ambos Administrador)
+-- Originales del script (ambos Administrador). Las claves se guardan como hash
+-- BCrypt ($2a$10$..., 60 caracteres): la BD no almacena texto plano. La clave
+-- real de los cinco usuarios sigue siendo 123456.
 INSERT INTO Usuarios (username, clave, idTipo) VALUES
-    ('jesusjuan',     '123456', 1),
-    ('marcovillarruel','123456', 1);
+    ('jesusjuan',      '$2a$10$rEUtCY592nM0wvLS74gscOFXwemdSEWafzrWZq7fB7d3wTrfg4CHG', 1),
+    ('marcovillarruel','$2a$10$71HA4WJIottlpYipY.UxuOG/Wgqvg.PsNd6NLAJpPQJcGk1HQH73q', 1);
 
 -- Usuarios de prueba: uno por rol, para probar el inicio de sesión y el
--- comportamiento por tipo de usuario (clave 123456).
+-- comportamiento por tipo de usuario (clave 123456 cifrada con BCrypt).
 INSERT INTO Usuarios (username, clave, idTipo, nombres, apellidos) VALUES
-    ('admin',      '123456', 1, 'Administrador', 'General'),
-    ('vendedor',   '123456', 2, 'Vendedor',      'General'),
-    ('almacenero', '123456', 3, 'Almacenero',    'General');
+    ('admin',      '$2a$10$mSnSed5DIfRl7mdF2WUyseLShI.WkxHcVwGkafCD4XaBGP4u62cdO', 1, 'Administrador', 'General'),
+    ('vendedor',   '$2a$10$xQHcDgIxcfAYOCveditE1eHgNHGpmhpwKUwYMyg5Rj068LCNtulnq', 2, 'Vendedor',      'General'),
+    ('almacenero', '$2a$10$5hD5qqO0d6zlMPWWaQ/C..cbUzQOVGirQE4AF4UoEP7X9f4.o2M3u', 3, 'Almacenero',    'General');
 
 -- Proveedores -------------------------------------------------------------------------------------
 INSERT INTO Proveedor (ruc, razon_social, telefono, estado) VALUES
@@ -162,6 +164,30 @@ INSERT INTO Proveedor (ruc, razon_social, telefono, estado) VALUES
     ('20100100109', 'Radiadores Union',              '987654329', 1),
     ('20100100110', 'Amortiguadores Gabriel',        '987654330', 1);
 
+-- Datos de prueba portados del equipo (agregar_BD.sql), adaptados a este esquema:
+-- RUCs y teléfonos renumerados (+9) para no chocar con los 10 proveedores anteriores.
+INSERT INTO Proveedor (ruc, razon_social, telefono, estado) VALUES
+    ('20100100111', 'Importaciones y Repuestos El Sol S.A.C.',    '987654331', 1),
+    ('20100100112', 'Autopartes y Motores del Perú S.R.L.',       '987654332', 1),
+    ('20100100113', 'Distribuidora Frenos y Embragues E.I.R.L.',  '987654333', 1),
+    ('20100100114', 'Comercializadora Automotriz Global S.A.',    '987654334', 1),
+    ('20100100115', 'Sistemas de Suspensión del Norte S.A.C.',    '987654335', 1),
+    ('20100100116', 'Lubricantes y Filtros Industriales S.R.L.',  '987654336', 1),
+    ('20100100117', 'Repuestos Eléctricos Automotrices E.I.R.L.', '987654337', 1),
+    ('20100100118', 'Multirepuestos y Baterías del Pacífico S.A.','987654338', 1),
+    ('20100100119', 'Importadora de Neumáticos San Martín S.A.C.','987654339', 1),
+    ('20100100120', 'Accesorios y Bujías del Sur S.R.L.',         '987654340', 1),
+    ('20100100121', 'Distribuidora de Correas y Fajas E.I.R.L.',  '987654341', 1),
+    ('20100100122', 'Tecnología Automotriz Integral S.A.',        '987654342', 1),
+    ('20100100123', 'Sistemas de Inyección diésel S.A.C.',        '987654343', 1),
+    ('20100100124', 'Comercial La Casa del Amortiguador S.R.L.',  '987654344', 1),
+    ('20100100125', 'Importaciones Mecánicas del Perú E.I.R.L.',  '987654345', 1),
+    ('20100100126', 'Soluciones en Escapes y Silenciadores S.A.', '987654346', 1),
+    ('20100100127', 'Autopartes y Radiadores El Inka S.A.C.',     '987654347', 1),
+    ('20100100128', 'Distribuidora de Iluminación Led Auto S.R.L.','987654348', 1),
+    ('20100100129', 'Central de Empaquetaduras y Retenes E.I.R.L.','987654349', 1),
+    ('20100100130', 'Consorcio Automotriz del Norte S.A.',        '987654350', 1);
+
 -- Clietes -----------------------------------------------------------------------------------------
 INSERT INTO Cliente (dni, nombre, apellido, telefono) VALUES
     ('70712586', 'Juan',  'Perez',   '999888777'),
@@ -172,12 +198,55 @@ INSERT INTO Cliente (dni, nombre, apellido, telefono) VALUES
     ('75768590', 'Elena', 'Castro',  '978546213'),
     ('70712552', 'Hugo',  'Silva',   '999444666');
 
+-- Datos de prueba portados del equipo (agregar_BD.sql): 16 clientes adicionales.
+INSERT INTO Cliente (dni, nombre, apellido, telefono) VALUES
+    ('42158963', 'Carlos',  'Gomez',    '987654321'),
+    ('71234567', 'Ana',     'Torres',   '912345678'),
+    ('45892314', 'Luis',    'Ramirez',  '923456789'),
+    ('73891245', 'Sofia',   'Fernandez','934567891'),
+    ('40981273', 'Jorge',   'Castro',   '945678912'),
+    ('72345689', 'Lucia',   'Mendoza',  '956789123'),
+    ('41892374', 'Miguel',  'Rojas',    '967891234'),
+    ('70983421', 'Valeria', 'Silva',    '978912345'),
+    ('43125689', 'Daniel',  'Vargas',   '989123456'),
+    ('74561283', 'Camila',  'Morales',  '990123457'),
+    ('42893412', 'Fernando','Paredes',  '911234568'),
+    ('71982345', 'Diana',   'Flores',   '922345679'),
+    ('40128934', 'Ricardo', 'Espinoza', '933456780'),
+    ('73451298', 'Gabriela','Chavez',   '944567891'),
+    ('41567892', 'Rosa',    'Medina',   '955678902'),
+    ('72893415', 'Jose',    'Huaman',   '966789013');
+
 -- Productos ---------------------------------------------------------------------------------------
 INSERT INTO Producto (codigo, nombre, descripcion, precio, stock, id_proveedor) VALUES
     ('PART-001', 'Pastillas de Freno',     'Pastillas de freno para frenos de disco', 85.50,  148, 1),
     ('PART-002', 'Filtro de Aire',         'Filtro de aire para motor',               45.00,   95, 2),
     ('PART-003', 'Batería 12V',            'Batería automotriz 12V 60Ah',            320.00,   32, 8),
     ('PART-004', 'Amortiguador Frontal',   'Amortiguador para suspensión frontal',   180.50,   18, 10);
+
+-- Datos de prueba portados del equipo (agregar_BD.sql): 20 productos adicionales,
+-- cada uno asociado a uno de los 20 proveedores nuevos (ids 11 a 30).
+INSERT INTO Producto (codigo, nombre, descripcion, precio, stock, id_proveedor) VALUES
+    ('PRD-101', 'Filtro de Aceite Sintético',   'Filtro de aceite para motores a gasolina y diésel de alto rendimiento',  35.50, 45, 11),
+    ('PRD-102', 'Juego de Pastillas de Freno',  'Pastillas cerámicas delanteras con alta resistencia al calor',           120.00, 30, 12),
+    ('PRD-103', 'Kit de Embrague Completo',     'Incluye plato, disco y rodaje de empuje para transmisión manual',        450.00, 15, 13),
+    ('PRD-104', 'Bomba de Agua Multiválvula',   'Bomba de agua de aleación de aluminio para sistema de refrigeración',    185.00, 20, 14),
+    ('PRD-105', 'Amortiguador Delantero Gas',   'Amortiguador presurizado con nitrógeno para mayor estabilidad',          210.00, 25, 15),
+    ('PRD-106', 'Aceite Multigrado 10W-40 (4L)','Lubricante sintético para protección del motor contra desgaste',          115.00, 50, 16),
+    ('PRD-107', 'Alternador 12V 90A',           'Alternador reforzado para sistema eléctrico automotriz',                  380.00, 12, 17),
+    ('PRD-108', 'Batería Automotriz 12V 60Ah',  'Batería libre de mantenimiento de libre descarga lenta',                  320.00, 18, 18),
+    ('PRD-109', 'Llanta Radiales 195/65 R15',   'Neumático de alta adherencia para piso seco y mojado',                    260.00, 40, 19),
+    ('PRD-110', 'Juego de Bujías de Iridio (4U)','Bujías de encendido rápido y optimización de consumo',                   95.00, 35, 20),
+    ('PRD-111', 'Faja de Distribución (Timing)', 'Correa dentada de caucho HNBR reforzado con fibra de vidrio',            85.00, 28, 21),
+    ('PRD-112', 'Filtro de Aire de Motor',      'Filtro de alto flujo de aire para protección contra partículas',          42.00, 60, 22),
+    ('PRD-113', 'Inyector de Combustible Diésel','Inyector de alta precisión Common Rail para motores diésel',            290.00, 14, 23),
+    ('PRD-114', 'Resorte de Suspensión Reforzado','Espirales traseras para amortiguación de carga pesada',                165.00, 22, 24),
+    ('PRD-115', 'Empaquetadura de Culata',      'Junta metálica de culata resistente a altas temperaturas',               75.00, 30, 25),
+    ('PRD-116', 'Silenciador de Escape Trasero', 'Silenciador aluminizado de bajo nivel de ruido',                        195.00, 10, 26),
+    ('PRD-117', 'Radiador de Aluminio Soldado',  'Radiador de enfriamiento de motor de alta disipación térmica',          340.00, 16, 27),
+    ('PRD-118', 'Faro Delantero LED H4 (Par)',  'Kit de focos LED de alta potencia luz blanca 6000K',                     130.00, 25, 28),
+    ('PRD-119', 'Juego de Retenes de Motor',    'Set completo de retenes de cigüeñal y árbol de levas',                    68.00, 40, 29),
+    ('PRD-120', 'Disco de Freno Ventilado (Par)','Discos de freno delanteros de hierro fundido nodular',                  220.00, 18, 30);
 
 -- Ventas ------------------------------------------------------------------------------------------
 INSERT INTO Venta (idUsuario, id_cliente, total) VALUES
@@ -198,9 +267,9 @@ INSERT INTO Movimientos (tipo, descripcion, fecha, usuario) VALUES
     ('Venta',     'Venta registrada con id 1',              NOW(), 'vendedor');
 
 
-----------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------
 --                                    Procedimientos almacenados
-----------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------
 
 DELIMITER $$
 
@@ -489,11 +558,66 @@ BEGIN
     VALUES(p_username, p_clave, p_idTipo, p_nombres, p_apellidos);
 END $$
 
+-- Ventas (punto de venta) -------------------------------------------------------------------------------------
+-- sp_registrarVenta: inserta la cabecera de la venta y devuelve el id generado.
+DROP PROCEDURE IF EXISTS sp_registrarVenta $$
+CREATE PROCEDURE sp_registrarVenta(
+    IN p_idUsuario INT,
+    IN p_idCliente INT,
+    IN p_total     DECIMAL(10,2)
+)
+BEGIN
+    INSERT INTO Venta (idUsuario, id_cliente, total, fecha)
+    VALUES (p_idUsuario, p_idCliente, p_total, NOW());
+    SELECT LAST_INSERT_ID() AS idVenta;
+END $$
+
+-- sp_registrarDetalleVenta: inserta una fila del detalle de la venta.
+DROP PROCEDURE IF EXISTS sp_registrarDetalleVenta $$
+CREATE PROCEDURE sp_registrarDetalleVenta(
+    IN p_idVenta        INT,
+    IN p_idProducto     INT,
+    IN p_cantidad       INT,
+    IN p_precioUnitario DECIMAL(10,2),
+    IN p_total          DECIMAL(10,2)
+)
+BEGIN
+    INSERT INTO DetalleVenta (id_venta, id_producto, cantidad, precio_unitario, total)
+    VALUES (p_idVenta, p_idProducto, p_cantidad, p_precioUnitario, p_total);
+END $$
+
+-- sp_reducirStockProducto: descuenta el stock vendido (se ejecuta por cada item confirmado).
+DROP PROCEDURE IF EXISTS sp_reducirStockProducto $$
+CREATE PROCEDURE sp_reducirStockProducto(
+    IN p_idProducto INT,
+    IN p_cantidad   INT
+)
+BEGIN
+    UPDATE Producto
+       SET stock = stock - p_cantidad
+     WHERE id_producto = p_idProducto;
+END $$
+
+-- sp_listarVentas: historial de ventas con cliente y usuario (para la vista y la bitácora).
+DROP PROCEDURE IF EXISTS sp_listarVentas $$
+CREATE PROCEDURE sp_listarVentas()
+BEGIN
+    SELECT v.id_venta,
+           v.fecha,
+           CONCAT(c.nombre, ' ', c.apellido) AS cliente,
+           u.username                        AS usuario,
+           v.total
+      FROM Venta      v
+      INNER JOIN Cliente  c ON v.id_cliente = c.id_cliente
+      INNER JOIN Usuarios u ON v.idUsuario  = u.idUsuario
+     ORDER BY v.id_venta DESC;
+END $$
+
 DELIMITER ;
 
-----------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------
 --                                          Verificaciones
-----------------------------------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------------------------------
 
 SELECT 'TiposUsuario' AS tabla, COUNT(*) AS filas FROM TiposUsuario
     UNION ALL SELECT 'Usuarios',      COUNT(*) FROM Usuarios

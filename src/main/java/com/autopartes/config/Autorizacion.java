@@ -27,7 +27,8 @@ public final class Autorizacion {
 
     /** Operaciones que modifican información (el resto se consideran de lectura). */
     private static final Set<String> OPERACIONES_ESCRITURA = new HashSet<>(Arrays.asList(
-            "registrar", "editar", "eliminar", "nuevo", "infoedit"));
+            "registrar", "editar", "eliminar", "nuevo", "infoedit",
+            "agregar", "confirmar"));
 
     private Autorizacion() {
     }
@@ -74,6 +75,7 @@ public final class Autorizacion {
         if (path.startsWith("/productos")) return "/productos";
         if (path.startsWith("/proveedores")) return "/proveedores";
         if (path.startsWith("/clientes")) return "/clientes";
+        if (path.startsWith("/ventas")) return "/ventas";
         if (path.startsWith("/movimientos")) return "/movimientos";
         if (path.startsWith("/reportes")) return "/reportes";
         return null;
@@ -96,6 +98,7 @@ public final class Autorizacion {
                 return idTipo == ADMINISTRADOR || idTipo == ALMACENERO;
             case "/clientes":
             case "/reportes":
+            case "/ventas": // punto de venta: consulta catálogo e historial
                 return idTipo == ADMINISTRADOR || idTipo == VENDEDOR;
             default:
                 return false;
@@ -110,6 +113,7 @@ public final class Autorizacion {
             case "/proveedores":
                 return idTipo == ADMINISTRADOR || idTipo == ALMACENERO;
             case "/clientes":
+            case "/ventas": // el vendedor arma y confirma ventas; también el admin
                 return idTipo == ADMINISTRADOR || idTipo == VENDEDOR;
             default:
                 return false; // movimientos y reportes son de solo lectura

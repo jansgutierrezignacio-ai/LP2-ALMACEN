@@ -5,13 +5,13 @@ Esta carpeta contiene la base de datos del proyecto **Comercial Autopartes SAC**
 
 - El script original del equipo (se conserva localmente, fuera del repositorio).
 - El **código Java real** (`procesos/Gestion*.java`, `procesos/GestionUsuario.java`,
-  `util/MysqlConexion.java`, `src/main/resources/application.properties`).
+  `src/main/resources/application.properties`).
 
 ## Archivos
 
 | Archivo | Descripción |
 |---|---|
-| `BD_ALMACEN.sql` | **Script completo**: base de datos, 8 tablas, datos semilla y 27 procedimientos almacenados. |
+| `BD_ALMACEN.sql` | **Script completo**: base de datos, 8 tablas, datos semilla y 31 procedimientos almacenados. |
 | `README.md` | Este documento. |
 
 > El script original del equipo no se versiona: sus tablas, columnas, tipos, claves
@@ -37,6 +37,13 @@ al archivo `.env` (no versionado) o a variables de entorno.
  4. Agregado `sp_RegistrarUsuario(...)`: el código lo invocaba pero **no existía** (incongruencia B12).
  5. Añadidos usuarios de prueba (uno por rol) para poder iniciar sesión y probar: `admin`, `vendedor`, `almacenero` (clave `123456`).
  6. Tablas con `ENGINE=InnoDB` y `DROP PROCEDURE IF EXISTS` antes de cada procedimiento (re-ejecutable).
+ 7. **Claves cifradas con BCrypt**: la columna `clave` guarda hashes `$2a$10$...`
+     de 60 caracteres (cabe en `VARCHAR(100)`) en lugar de texto plano. Los cinco
+     usuarios semilla tienen la clave real `123456`; la verificación la hace la
+     aplicación con `PasswordEncoder.matches()` (ver
+     `com/autopartes/config/PasswordConfig.java` y `procesos/GestionUsuario.login`).
+     Para generar un hash nuevo (p. ej. al añadir usuarios al script):
+     `new BCryptPasswordEncoder().encode("clave")`.
 
 El resto de tablas, columnas, tipos, claves y procedimientos se mantiene fiel al original.
 
@@ -77,5 +84,6 @@ mysql -h 127.0.0.1 -P 3306 -u zeth -p'<MYSQL_PASSWORD>' BD_ALMACEN
 
 - **Tablas (8):** TiposUsuario, Usuarios, Proveedor, Cliente, Producto, Venta, DetalleVenta, Movimientos.
 - **Roles:** 1 Administrador, 2 Vendedor, 3 Almacenero.
-- **Procedimientos (27):** clientes (6), proveedores (7), productos (7), reportes (3),
-  movimientos (3), usuarios (1: `sp_RegistrarUsuario`).
+- **Procedimientos (31):** clientes (6), proveedores (7), productos (7), reportes (3),
+  movimientos (3), usuarios (1: `sp_RegistrarUsuario`), ventas (4: `sp_registrarVenta`,
+  `sp_registrarDetalleVenta`, `sp_reducirStockProducto`, `sp_listarVentas`).

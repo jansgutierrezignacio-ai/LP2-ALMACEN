@@ -6,6 +6,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,17 +21,23 @@ public class GestionUsuario implements IntUsuario {
     @PersistenceContext
     private EntityManager em;
 
+    // Verifica las claves almacenadas como hash BCrypt (ver PasswordConfig).
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     @SuppressWarnings("unchecked")
     public Usuario login(String username, String clave) {
-        // Consulta nativa con el JOIN a TiposUsuario para poblar nombreTipo (@Transient),
-        // que el dashboard muestra en la barra superior junto al username.
+        // La búsqueda es únicamente por username (consulta parametrizada, sin
+        // inyección SQL) con el JOIN a TiposUsuario para poblar nombreTipo
+        // (@Transient), que el dashboard muestra en la barra superior junto al
+        // username. La clave no participa en la sentencia: se compara después
+        // contra el hash BCrypt con matches().
         javax.persistence.Query q = em.createNativeQuery(
                 "SELECT u.idUsuario, u.username, u.clave, u.idTipo, t.descripcion "
               + "FROM Usuarios u INNER JOIN TiposUsuario t ON u.idTipo = t.idTipo "
-              + "WHERE u.username = ?1 AND u.clave = ?2");
+              + "WHERE u.username = ?1");
         q.setParameter(1, username);
-        q.setParameter(2, clave);
         List<Object[]> filas = q.getResultList();
         if (filas.isEmpty()) {
             return null;
@@ -41,6 +49,11 @@ public class GestionUsuario implements IntUsuario {
         u.setClave((String) f[2]);
         u.setIdTipo(((Number) f[3]).intValue());
         u.setNombreTipo(f[4] == null ? null : String.valueOf(f[4]));
+        // u.getClave() es el hash BCrypt ($2a$..., 60 caracteres); si no coincide
+        // con la clave digitada, el acceso se rechaza igual que con usuario inexistente.
+        if (!passwordEncoder.matches(clave, u.getClave())) {
+            return null;
+        }
         return u;
     }
 

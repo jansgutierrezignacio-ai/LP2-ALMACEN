@@ -21,6 +21,7 @@
 
 	<!-- Estilos -->
     <link rel="stylesheet" href="CSS/General.css">
+    <link rel="stylesheet" href="CSS/modern.css">
 
 </head>
 <body>
@@ -32,11 +33,11 @@
     <div class="content flex-grow-1">
 
         <!-- Topbar -->
-        <div class="topbar d-flex justify-content-between align-items-center px-4">
-            <h5>Dashboard</h5>
-            <span class="text-white">
-            	<i class="bi bi-person-circle"></i>
-            	${sessionScope.usuario.username} (${sessionScope.usuario.nombreTipo != null ? sessionScope.usuario.nombreTipo : 'Usuario'})
+        <div class="topbar d-flex justify-content-between align-items-center px-4 mb-4">
+            <h5><i class="bi bi-speedometer2 me-2"></i>Dashboard</h5>
+            <span class="badge-role">
+            	<i class="bi bi-person-circle me-1"></i>
+            	${sessionScope.usuario.username} · ${rolNombre}
             </span>
         </div>
 
