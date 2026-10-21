@@ -3,7 +3,6 @@ package com.autopartes.controlador;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,34 +18,55 @@ import modelo.Reporte;
 @Controller
 public class ReporteController {
 
+    /** Ventas por pagina en el listado del reporte. */
+    private static final int TAMANO_PAGINA = 10;
+
     @Autowired
     private IntReporte reporteService;
 
     @Autowired
     private IntReportePdf reportePdfService;
 
-    // Muestra el formulario de reportes sin datos.
+    // Al entrar a /reportes se muestra directamente el listado, para no obligar
+    // a elegir un rango de fechas antes de ver datos.
     @GetMapping(value = "/reportes", params = "!type")
     public String formulario() {
-        return "Reporte";
+        return "redirect:/reportes?type=listar";
     }
 
-    // Consulta de ventas por rango de fechas.
+    /**
+     * Listado de ventas. Sin fechas muestra TODAS las ventas (paginadas); con
+     * ambas fechas filtra por rango. La paginación se hace aquí porque los
+     * procedimientos devuelven el conjunto completo y el volumen es pequeño.
+     */
     @GetMapping(value = "/reportes", params = "type=listar")
     public String listar(@RequestParam(value = "txtFechaInicio", required = false) String fechaInicio,
                          @RequestParam(value = "txtFechaFin", required = false) String fechaFin,
+                         @RequestParam(value = "pagina", required = false, defaultValue = "1") int pagina,
                          Model model) {
-        List<Reporte> lista;
-        if (fechaInicio == null || fechaInicio.trim().isEmpty()
-                || fechaFin == null || fechaFin.trim().isEmpty()) {
-            // Sin rango de fechas no se consulta el procedimiento.
-            lista = java.util.Collections.emptyList();
-        } else {
-            lista = reporteService.listarReportePorFechas(fechaInicio, fechaFin);
-        }
-        model.addAttribute("dataReporte", lista);
+        boolean conFiltro = fechaInicio != null && !fechaInicio.trim().isEmpty()
+                && fechaFin != null && !fechaFin.trim().isEmpty();
+        List<Reporte> todas = conFiltro
+                ? reporteService.listarReportePorFechas(fechaInicio, fechaFin)
+                : reporteService.listarTodasLasVentas();
+
+        int totalRegistros = todas.size();
+        int totalPaginas = Math.max(1, (int) Math.ceil(totalRegistros / (double) TAMANO_PAGINA));
+        // Si piden una página fuera de rango (o negativa) se ajusta a la válida.
+        int paginaActual = Math.min(Math.max(pagina, 1), totalPaginas);
+        int desde = (paginaActual - 1) * TAMANO_PAGINA;
+        int hasta = Math.min(desde + TAMANO_PAGINA, totalRegistros);
+        List<Reporte> paginaDatos = desde >= totalRegistros
+                ? java.util.Collections.emptyList()
+                : todas.subList(desde, hasta);
+
+        model.addAttribute("dataReporte", paginaDatos);
         model.addAttribute("fInicio", fechaInicio);
         model.addAttribute("fFin", fechaFin);
+        model.addAttribute("conFiltro", conFiltro);
+        model.addAttribute("paginaActual", paginaActual);
+        model.addAttribute("totalPaginas", totalPaginas);
+        model.addAttribute("totalRegistros", totalRegistros);
         return "Reporte";
     }
 
@@ -59,21 +79,27 @@ public class ReporteController {
         return "Reporte";
     }
 
-    // Descarga en PDF del reporte de ventas por fechas (JasperReports).
+    // Descarga en PDF del reporte de ventas (JasperReports). Si se indica un
+    // rango de fechas se filtra; si no, se exportan todas las ventas.
     // Usa los mismos datos que la consulta en pantalla; la autorización
     // (/reportes, operación de lectura) la aplica AuthFilter como a cualquier ruta.
     @GetMapping("/reportes/pdf")
-    public void descargarPorFechas(@RequestParam("txtFechaInicio") String fechaInicio,
-                                   @RequestParam("txtFechaFin") String fechaFin,
-                                   HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (fechaInicio == null || fechaInicio.trim().isEmpty()
-                || fechaFin == null || fechaFin.trim().isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/reportes");
-            return;
-        }
-        List<Reporte> datos = reporteService.listarReportePorFechas(fechaInicio, fechaFin);
-        byte[] pdf = reportePdfService.generarVentasPorFechas(datos, fechaInicio, fechaFin);
-        enviarPdf(response, pdf, "reporte_ventas_" + fechaInicio + "_" + fechaFin + ".pdf");
+    public void descargarPorFechas(@RequestParam(value = "txtFechaInicio", required = false) String fechaInicio,
+                                   @RequestParam(value = "txtFechaFin", required = false) String fechaFin,
+                                   HttpServletResponse response) throws IOException {
+        boolean conFiltro = fechaInicio != null && !fechaInicio.trim().isEmpty()
+                && fechaFin != null && !fechaFin.trim().isEmpty();
+        List<Reporte> datos = conFiltro
+                ? reporteService.listarReportePorFechas(fechaInicio, fechaFin)
+                : reporteService.listarTodasLasVentas();
+        // La plantilla muestra "Del <inicio> al <fin>"; con "-" imprime "Todas las ventas".
+        String etiquetaInicio = conFiltro ? fechaInicio : "-";
+        String etiquetaFin = conFiltro ? fechaFin : "-";
+        byte[] pdf = reportePdfService.generarVentasPorFechas(datos, etiquetaInicio, etiquetaFin);
+        String nombre = conFiltro
+                ? "reporte_ventas_" + fechaInicio + "_" + fechaFin + ".pdf"
+                : "reporte_ventas_todas.pdf";
+        enviarPdf(response, pdf, nombre);
     }
 
     // Descarga en PDF del detalle de una venta (JasperReports).

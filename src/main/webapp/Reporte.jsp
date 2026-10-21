@@ -39,30 +39,42 @@
         <div class="tab-content">
             
             <div class="tab-pane fade show active" id="fechas">
-                <h6 class="text-muted mb-3 uppercase">Filtrar por rango de tiempo</h6>
-                
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <h5 class="m-0">
+                        <i class="bi bi-list-ul me-2"></i>Ventas registradas
+                        <span class="badge bg-secondary ms-2">${totalRegistros}</span>
+                    </h5>
+                    <c:if test="${conFiltro}">
+                        <span class="text-muted small">
+                            <i class="bi bi-funnel"></i> Filtrado: ${fInicio} a ${fFin}
+                        </span>
+                    </c:if>
+                </div>
+
+                <p class="text-muted small mb-3">
+                    Se muestran todas las ventas. Puedes filtrar por un rango de fechas si lo necesitas.
+                </p>
+
                 <form action="reportes" method="get" class="row g-3 mb-4">
                     <input type="hidden" name="type" value="listar">
                     <div class="col-md-3">
-                        <input type="date" name="txtFechaInicio" class="form-control" value="${fInicio}" required>
+                        <label class="form-label small text-muted mb-1">Desde (opcional)</label>
+                        <input type="date" name="txtFechaInicio" class="form-control" value="${fInicio}">
                     </div>
                     <div class="col-md-3">
-                        <input type="date" name="txtFechaFin" class="form-control" value="${fFin}" required>
+                        <label class="form-label small text-muted mb-1">Hasta (opcional)</label>
+                        <input type="date" name="txtFechaFin" class="form-control" value="${fFin}">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-dark w-100"><i class="bi bi-search"></i> Consultar</button>
                     </div>
-                    <div class="col-md-3">
-                        <c:choose>
-                            <c:when test="${not empty fInicio and not empty fFin}">
-                                <a href="reportes/pdf?txtFechaInicio=${fInicio}&txtFechaFin=${fFin}" class="btn btn-danger w-100">
-                                    <i class="bi bi-file-earmark-pdf-fill"></i> Descargar PDF
-                                </a>
-                            </c:when>
-                            <c:otherwise>
-                                <span class="btn btn-danger w-100 disabled"><i class="bi bi-file-earmark-pdf"></i> Descargar PDF</span>
-                            </c:otherwise>
-                        </c:choose>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <a href="reportes?type=listar" class="btn btn-outline-secondary w-100"><i class="bi bi-arrow-clockwise"></i> Ver todas</a>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <a href="reportes/pdf?txtFechaInicio=${fInicio}&amp;txtFechaFin=${fFin}" class="btn btn-danger w-100">
+                            <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                        </a>
                     </div>
                 </form>
 
@@ -84,17 +96,49 @@
                                 <td>${r.nombreCliente}</td>
                                 <td class="fw-bold text-success">S/ <fmt:formatNumber value="${r.total}" minFractionDigits="2"/></td>
                                 <td class="text-center">
-                                    <a href="reportes?type=detalle&id=${r.idVenta}" class="btn btn-sm btn-outline-primary">
+                                    <a href="reportes?type=detalle&amp;id=${r.idVenta}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-zoom-in"></i> Ver Detalle
                                     </a>
                                 </td>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty dataReporte}">
-                            <tr><td colspan="5" class="text-center py-4 text-muted">No se encontraron registros.</td></tr>
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    <c:choose>
+                                        <c:when test="${conFiltro}">No se encontraron ventas en ese rango de fechas.</c:when>
+                                        <c:otherwise>No hay ventas registradas.</c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </tr>
                         </c:if>
                     </tbody>
                 </table>
+
+                <c:if test="${totalPaginas > 1}">
+                    <nav class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3" aria-label="Paginación de ventas">
+                        <small class="text-muted">
+                            Página ${paginaActual} de ${totalPaginas} · ${totalRegistros} ventas
+                        </small>
+                        <ul class="pagination pagination-sm m-0">
+                            <li class="page-item ${paginaActual <= 1 ? 'disabled' : ''}">
+                                <a class="page-link" href="reportes?type=listar&amp;pagina=${paginaActual - 1}&amp;txtFechaInicio=${fInicio}&amp;txtFechaFin=${fFin}">
+                                    <i class="bi bi-chevron-left"></i> Anterior
+                                </a>
+                            </li>
+                            <c:forEach var="p" begin="1" end="${totalPaginas}">
+                                <li class="page-item ${p == paginaActual ? 'active' : ''}">
+                                    <a class="page-link" href="reportes?type=listar&amp;pagina=${p}&amp;txtFechaInicio=${fInicio}&amp;txtFechaFin=${fFin}">${p}</a>
+                                </li>
+                            </c:forEach>
+                            <li class="page-item ${paginaActual >= totalPaginas ? 'disabled' : ''}">
+                                <a class="page-link" href="reportes?type=listar&amp;pagina=${paginaActual + 1}&amp;txtFechaInicio=${fInicio}&amp;txtFechaFin=${fFin}">
+                                    Siguiente <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </c:if>
             </div>
 
             <div class="tab-pane fade" id="detalle">

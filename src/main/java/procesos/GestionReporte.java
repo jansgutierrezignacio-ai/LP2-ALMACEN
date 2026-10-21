@@ -38,12 +38,53 @@ public class GestionReporte implements IntReporte {
         for (Object[] f : filas) {
             Reporte r = new Reporte();
             r.setIdVenta(((Number) f[0]).intValue());
-            r.setFecha(f[1] == null ? null : String.valueOf(f[1]));
+            r.setFecha(formatearFecha(f[1]));
             r.setNombreCliente(f[2] == null ? null : String.valueOf(f[2]));
             r.setTotal(f[3] == null ? 0 : ((Number) f[3]).doubleValue());
             lista.add(r);
         }
         return lista;
+    }
+
+    /**
+     * Todas las ventas registradas, sin filtrar por fechas. Reutiliza
+     * sp_listarVentas (el mismo que alimenta el punto de venta), así que no
+     * hace falta un procedimiento nuevo para el listado por defecto.
+     * Columnas: id_venta, fecha, cliente, usuario, total.
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Reporte> listarTodasLasVentas() {
+        List<Reporte> lista = new ArrayList<>();
+        StoredProcedureQuery q = em.createStoredProcedureQuery("sp_listarVentas");
+        List<Object[]> filas = q.getResultList();
+        for (Object[] f : filas) {
+            Reporte r = new Reporte();
+            r.setIdVenta(((Number) f[0]).intValue());
+            r.setFecha(formatearFecha(f[1]));
+            r.setNombreCliente(f[2] == null ? null : String.valueOf(f[2]));
+            r.setTotal(f[4] == null ? 0 : ((Number) f[4]).doubleValue());
+            lista.add(r);
+        }
+        return lista;
+    }
+
+    /**
+     * Normaliza la fecha que devuelve MySQL. La columna Venta.fecha es DATETIME,
+     * así que Hibernate entrega un Timestamp cuyo toString() arrastra ".0"
+     * ("2026-10-21 11:02:17.0"). Se formatea para la vista y para el PDF.
+     */
+    private String formatearFecha(Object valor) {
+        if (valor == null) {
+            return null;
+        }
+        if (valor instanceof java.sql.Timestamp) {
+            return new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format((java.util.Date) valor);
+        }
+        if (valor instanceof java.util.Date) {
+            return new java.text.SimpleDateFormat("dd/MM/yyyy").format((java.util.Date) valor);
+        }
+        return String.valueOf(valor);
     }
 
     @Override

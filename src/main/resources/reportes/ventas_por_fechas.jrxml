@@ -41,7 +41,7 @@
                 <textElement textAlignment="Center">
                     <font fontName="SansSerif" size="9"/>
                 </textElement>
-                <textFieldExpression><![CDATA["Del " + $P{pFechaInicio} + " al " + $P{pFechaFin}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$P{pFechaInicio}.equals("-") ? "Todas las ventas" : "Del " + $P{pFechaInicio} + " al " + $P{pFechaFin}]]></textFieldExpression>
             </textField>
         </band>
     </title>
