@@ -51,11 +51,6 @@
             background: #5a3782;
             transform: translateY(-1px);
         }
-        .btn-outline-secondary {
-            border-radius: 8px;
-            padding: 0.75rem;
-            font-weight: 600;
-        }
         /* Estilos de validación JQuery */
         label.error {
             color: #dc3545;
@@ -135,10 +130,6 @@
                 </button>
             </div>
 
-            <div class="text-center mt-3">
-            <a href="/usuarios/nuevo" class="btn btn-outline-secondary" type="nuevo">Registrarse</a>
-            </div>
-            
             <div class="mt-4 text-center border-top pt-3">
                 <small class="text-muted">Sistema de grupo</small>
             </div>
