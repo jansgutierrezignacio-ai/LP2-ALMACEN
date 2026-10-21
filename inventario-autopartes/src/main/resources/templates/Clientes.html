@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - Sistema de Almacén</title>
+
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/style/clientes.css}">
+</head>
+<body>
+<div class="d-flex">
+
+    <!-- Sidebar Lateral -->
+    <div class="sidebar p-3 d-flex flex-column">
+        <h4 class="brand-title mb-4 px-2 d-flex align-items-center gap-2">
+            <i class="bi bi-box-seam-fill"></i> Almacén
+        </h4>
+        <ul class="nav flex-column mb-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/inicio}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" th:href="@{/clientes}">
+                    <i class="bi bi-people"></i> Clientes
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ALMACENERO')">
+                <a class="nav-link" th:href="@{/proveedores}">
+                    <i class="bi bi-truck"></i> Proveedores
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/productos/listar}">
+                    <i class="bi bi-box"></i> Productos
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'VENDEDOR')">
+                <a class="nav-link" th:href="@{/ventas/listar}">
+                    <i class="bi bi-cart-check"></i> Ventas
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link" th:href="@{/reportes}">
+                    <i class="bi bi-graph-up-arrow"></i> Reportes
+                </a>
+            </li>    
+            <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ALMACENERO')">
+                <a class="nav-link" th:href="@{/movimientos/listar}">
+                    <i class="bi bi-clock-history"></i> Movimientos
+                </a>
+            </li>
+        </ul>
+
+        <div class="pt-3 border-top border-secondary border-opacity-25">
+            <a class="nav-link text-danger" th:href="@{/login}">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="content flex-grow-1 p-4">
+
+        <!-- Topbar -->
+        <div class="topbar d-flex justify-content-between align-items-center mb-4">
+            <h5 class="m-0 font-weight-bold"><i class="bi bi-people me-2"></i>Gestión de Clientes</h5>
+            <div class="badge-role d-flex align-items-center gap-2">
+                <i class="bi bi-person-circle fs-5"></i>
+                <span th:text="${usuario}" class="fw-bold">Usuario</span> 
+                <span class="opacity-50">|</span>
+                <span th:text="${rolUsuarioActual}">Rol</span>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div th:if="${mensajeOk}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensajeOk}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${mensaje}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${mensaje}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Pestañas NAV Tarjetas (Visibles de acuerdo al rol) -->
+        <div class="nav nav-pills nav-pills-custom d-flex flex-nowrap gap-3 mb-4 overflow-auto pb-2" role="tablist">
+            
+            <!-- Listado (Visible para todos) -->
+            <div class="nav-link text-center" 
+                 th:classappend="${activeTab != 'agregar' && activeTab != 'editar'} ? 'active' : ''" 
+                 data-bs-toggle="pill" data-bs-target="#listado">
+                <i class="bi bi-card-list fs-3 d-block mb-1"></i>
+                <div class="fw-bold">Lista de Clientes</div>
+                <small class="opacity-75" th:text="${cantReg != null ? cantReg + ' registrados' : '0 registrados'}">0 registrados</small>
+            </div>
+
+            <!-- Nuevo Cliente (Visible para Admin y Vendedor) -->
+            <div sec:authorize="hasAnyRole('ADMIN', 'VENDEDOR')"
+                 class="nav-link text-center" 
+                 th:classappend="${activeTab == 'agregar'} ? 'active' : ''" 
+                 data-bs-toggle="pill" data-bs-target="#nuevo">
+                <i class="bi bi-person-plus fs-3 d-block mb-1"></i>
+                <div class="fw-bold">Nuevo Cliente</div>
+                <small class="opacity-75">Registrar nuevo</small>
+            </div>
+
+            <!-- Editar Cliente (Visible para Admin y Vendedor cuando se edita) -->
+            <div sec:authorize="hasAnyRole('ADMIN', 'VENDEDOR')"
+                 th:if="${activeTab == 'editar'}" 
+                 class="nav-link text-center" 
+                 th:classappend="${activeTab == 'editar'} ? 'active' : ''" 
+                 data-bs-toggle="pill" data-bs-target="#editar">
+                <i class="bi bi-pencil-square fs-3 d-block mb-1"></i>
+                <div class="fw-bold">Editar Cliente</div>
+                <small class="opacity-75">Modificar datos</small>
+            </div>
+        </div>
+
+        <!-- Paneles de Contenido -->
+        <div class="tab-content">
+            
+            <!-- 1. LISTADO Y BÚSQUEDA -->
+            <div class="tab-pane fade" th:classappend="${activeTab != 'agregar' && activeTab != 'editar'} ? 'show active' : ''" id="listado" role="tabpanel">
+                <div class="card card-content">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                        <h5 class="m-0 text-secondary fw-bold">Clientes Registrados</h5>
+                        
+                        <form th:action="@{/clientes/buscar}" method="get" class="d-flex gap-2 align-items-center">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" class="form-control border-start-0 ps-0" name="txtBuscar" th:value="${txtBuscar}" placeholder="Buscar cliente por nombre...">
+                            </div>
+                            <button type="submit" class="btn btn-primary px-3"><i class="bi bi-search"></i></button>
+                            <a th:href="@{/clientes/listar}" class="btn btn-outline-secondary" title="Recargar"><i class="bi bi-arrow-clockwise"></i></a>
+                        </form>
+                    </div>
+
+                    <!-- Tabla de Clientes -->
+                    <div class="table-responsive">
+                        <table class="table table-custom table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>DNI</th>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Teléfono</th>
+                                    <th sec:authorize="hasAnyRole('ADMIN', 'VENDEDOR')" class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="c : ${dataCliente}">
+                                    <td class="fw-bold text-muted" th:text="${'#' + c.idCliente}">#1</td>
+                                    <td><span class="badge bg-light text-dark border" th:text="${c.dni}">00000000</span></td>
+                                    <td th:text="${c.nombre}" class="fw-medium">Nombre</td>
+                                    <td th:text="${c.apellido}">Apellido</td>
+                                    <td th:text="${c.telefono}">999999999</td>
+                                    
+                                    <!-- Columna de Acciones para ADMIN y VENDEDOR -->
+                                    <td sec:authorize="hasAnyRole('ADMIN', 'VENDEDOR')" class="text-center">
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <a th:href="@{/clientes/infoEdit(id=${c.idCliente})}" class="btn btn-warning btn-sm text-dark px-2" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <!-- Botón Eliminar solo para ADMIN -->
+                                            <a sec:authorize="hasRole('ADMIN')" 
+                                               th:href="@{/clientes/eliminar(id=${c.idCliente})}" 
+                                               class="btn btn-danger btn-sm px-2" 
+                                               onclick="return confirm('¿Estás seguro de eliminar este cliente?');" 
+                                               title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${dataCliente == null || dataCliente.empty}">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                        No se encontraron registros de clientes.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. NUEVO CLIENTE (Solo Admin y Vendedor) -->
+            <div sec:authorize="hasAnyRole('ADMIN', 'VENDEDOR')" 
+                 class="tab-pane fade" 
+                 th:classappend="${activeTab == 'agregar'} ? 'show active' : ''" 
+                 id="nuevo" role="tabpanel">
+                <div class="card card-content">
+                    <h5 class="mb-4 text-primary fw-bold"><i class="bi bi-person-plus me-2"></i>Registrar Nuevo Cliente</h5>
+                    
+                    <form th:action="@{/clientes/registrar}" th:object="${cliente}" method="post" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">DNI <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{dni}" class="form-control" maxlength="8" placeholder="Ingrese DNI" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{nombre}" class="form-control" placeholder="Ingrese nombres" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Apellido <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{apellido}" class="form-control" placeholder="Ingrese apellidos" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Teléfono</label>
+                            <input type="text" th:field="*{telefono}" class="form-control" maxlength="9" placeholder="Ingrese teléfono">
+                        </div>
+                        <div class="col-12 mt-4 pt-2 border-top">
+                            <button type="submit" class="btn btn-primary btn-custom-action me-2">
+                                <i class="bi bi-save me-1"></i> Guardar Cliente
+                            </button>
+                            <a th:href="@{/clientes/listar}" class="btn btn-light btn-custom-action border">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. EDITAR CLIENTE (Solo Admin y Vendedor) -->
+            <div sec:authorize="hasAnyRole('ADMIN', 'VENDEDOR')" 
+                 class="tab-pane fade" 
+                 th:classappend="${activeTab == 'editar'} ? 'show active' : ''" 
+                 id="editar" role="tabpanel">
+                <div class="card card-content" th:if="${clienteDataEdit != null}">
+                    <h5 class="mb-4 text-warning fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Datos del Cliente</h5>
+                    
+                    <form th:action="@{/clientes/editar}" th:object="${clienteDataEdit}" method="post" class="row g-3">
+                        <input type="hidden" th:field="*{idCliente}">
+                        
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">DNI <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{dni}" class="form-control" maxlength="8" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{nombre}" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Apellido <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{apellido}" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Teléfono</label>
+                            <input type="text" th:field="*{telefono}" class="form-control" maxlength="9">
+                        </div>
+                        <div class="col-12 mt-4 pt-2 border-top">
+                            <button type="submit" class="btn btn-warning btn-custom-action text-dark me-2">
+                                <i class="bi bi-arrow-repeat me-1"></i> Actualizar Cliente
+                            </button>
+                            <a th:href="@{/clientes/listar}" class="btn btn-light btn-custom-action border">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap 5 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

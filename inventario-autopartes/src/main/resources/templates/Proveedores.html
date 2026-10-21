@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveedores - Sistema de Almacén</title>
+
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/style/proveedores.css}">
+</head>
+<body>
+<div class="d-flex">
+
+    <!-- Sidebar Lateral -->
+    <div class="sidebar p-3 d-flex flex-column">
+        <h4 class="brand-title mb-4 px-2 d-flex align-items-center gap-2">
+            <i class="bi bi-box-seam-fill"></i> Almacén
+        </h4>
+        <ul class="nav flex-column mb-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/inicio}">
+                    <i class="bi bi-speedometer2"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/clientes}">
+                    <i class="bi bi-people"></i> Clientes
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ALMACENERO')">
+                <a class="nav-link active" th:href="@{/proveedores}">
+                    <i class="bi bi-truck"></i> Proveedores
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/productos/listar}">
+                    <i class="bi bi-box"></i> Productos
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'VENDEDOR')">
+                <a class="nav-link" th:href="@{/ventas/listar}">
+                    <i class="bi bi-cart-check"></i> Ventas
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link" th:href="@{/reportes}">
+                    <i class="bi bi-graph-up-arrow"></i> Reportes
+                </a>
+            </li>    
+            <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'ALMACENERO')">
+                <a class="nav-link" th:href="@{/movimientos/listar}">
+                    <i class="bi bi-clock-history"></i> Movimientos
+                </a>
+            </li>
+        </ul>
+
+        <div class="pt-3 border-top border-secondary border-opacity-25">
+            <a class="nav-link text-danger" th:href="@{/login}">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div class="content flex-grow-1 p-4">
+
+        <!-- Topbar -->
+        <div class="topbar d-flex justify-content-between align-items-center mb-4">
+            <h5 class="m-0 fw-bold"><i class="bi bi-truck me-2"></i>Gestión de Proveedores</h5>
+            <div class="badge-role d-flex align-items-center gap-2">
+                <i class="bi bi-person-circle fs-5"></i>
+                <span th:text="${usuario}" class="fw-bold">Usuario</span> 
+                <span class="opacity-50">|</span>
+                <span th:text="${rolUsuarioActual}">Rol</span>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div th:if="${mensajeOk}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensajeOk}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${mensaje}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${mensaje}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Pestañas NAV -->
+        <div class="nav nav-pills nav-pills-custom d-flex flex-nowrap overflow-auto gap-3 mb-4 pb-2" role="tablist">
+            <div class="nav-link text-center" th:classappend="${activeTab != 'agregar' ? 'active' : ''}" data-bs-toggle="pill" data-bs-target="#listar">
+                <i class="bi bi-card-list fs-3 d-block mb-1"></i>
+                <div class="fw-bold">Lista de Proveedores</div>
+                <small class="opacity-75" th:text="${cantReg != null ? cantReg + ' registrados' : '0 registrados'}">0 registrados</small>
+            </div>
+            
+            <div class="nav-link text-center" th:classappend="${activeTab == 'agregar' ? 'active' : ''}" data-bs-toggle="pill" data-bs-target="#agregar">
+                <i class="bi bi-plus-circle fs-3 d-block mb-1"></i>
+                <div class="fw-bold">Nuevo Proveedor</div>
+                <small class="opacity-75">Registrar socio</small>
+            </div>
+
+            <div class="nav-link text-center" data-bs-toggle="pill" data-bs-target="#consultar">
+                <i class="bi bi-search fs-3 d-block mb-1"></i>
+                <div class="fw-bold">Búsqueda Rápida</div>
+                <small class="opacity-75">Filtrar por RUC/Razón</small>
+            </div>
+        </div>
+
+        <div class="tab-content">
+
+            <!-- 1. PESTAÑA: LISTAR -->
+            <div class="tab-pane fade" th:classappend="${activeTab != 'agregar' ? 'show active' : ''}" id="listar">
+                <div class="card card-content">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                        <h5 class="m-0 text-secondary fw-bold">Directorio de Proveedores</h5>
+                        
+                        <form th:action="@{/proveedores/buscar}" method="get" class="d-flex gap-2 align-items-center">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" name="txtBuscar" th:value="${txtBuscar}" class="form-control border-start-0 ps-0" placeholder="Buscar por razón social...">
+                            </div>
+                            <button type="submit" class="btn btn-dark px-3"><i class="bi bi-search"></i></button>
+                            <a th:href="@{/proveedores/listar}" class="btn btn-outline-secondary" title="Recargar"><i class="bi bi-arrow-clockwise"></i></a>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-custom table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>RUC</th>
+                                    <th>Razón Social</th>
+                                    <th>Teléfono</th>
+                                    <th>Estado</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${dataProveedor}">
+                                    <td class="fw-bold text-muted" th:text="${'#' + p.idProveedor}">#1</td>
+                                    <td><span class="badge bg-light text-dark border" th:text="${p.ruc}">10000000001</span></td>
+                                    <td th:text="${p.razonSocial}" class="fw-medium">Razón Social</td>
+                                    <td th:text="${p.telefono}">999999999</td>
+                                    <td>
+                                        <span th:if="${p.estado == 1}" class="badge bg-success px-2 py-1">Activo</span>
+                                        <span th:if="${p.estado != 1}" class="badge bg-secondary px-2 py-1">Inactivo</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <!-- Editar: Visible para Admin y Almacenero -->
+                                            <a th:href="@{/proveedores/infoEdit(id=${p.idProveedor})}" class="btn btn-warning btn-sm text-dark px-2" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <!-- Eliminar: SOLO visible para Administrador -->
+                                            <a sec:authorize="hasRole('ADMIN')" 
+                                               th:href="@{/proveedores/eliminar(id=${p.idProveedor})}" 
+                                               class="btn btn-danger btn-sm px-2"
+                                               onclick="return confirm('¿Está seguro de eliminar este proveedor?');" 
+                                               title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr th:if="${dataProveedor == null || dataProveedor.empty}">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="bi bi-truck fs-2 d-block mb-2"></i>
+                                        No hay proveedores registrados.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. PESTAÑA: AGREGAR -->
+            <div class="tab-pane fade" th:classappend="${activeTab == 'agregar' ? 'show active' : ''}" id="agregar">
+                <div class="card card-content">
+                    <h5 class="mb-4 text-warning fw-bold" style="color: #f97316 !important;"><i class="bi bi-truck me-2"></i>Registrar Nuevo Proveedor</h5>
+                    
+                    <form th:action="@{/proveedores/registrar}" method="post" th:object="${proveedor}" class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">RUC <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{ruc}" class="form-control" maxlength="11" placeholder="Ej. 20123456789" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Razón Social <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{razonSocial}" class="form-control" placeholder="Ej. Autopartes del Perú S.A.C." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Teléfono <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{telefono}" class="form-control" maxlength="15" placeholder="Número de contacto" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Estado <span class="text-danger">*</span></label>
+                            <select th:field="*{estado}" class="form-select">
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mt-4 pt-2 border-top">
+                            <button type="submit" class="btn text-white px-4 me-2" style="background-color: #f97316;"><i class="bi bi-save me-1"></i> Registrar</button>
+                            <button type="reset" class="btn btn-light border px-4">Limpiar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. PESTAÑA: CONSULTAR -->
+            <div class="tab-pane fade" id="consultar">
+                <div class="card card-content">
+                    <h5 class="mb-4 text-secondary fw-bold"><i class="bi bi-search me-2"></i>Consulta de Proveedores</h5>
+                    <form th:action="@{/proveedores/buscar}" method="get" class="d-flex gap-2 mb-3">
+                        <input type="text" name="txtBuscar" class="form-control" placeholder="Buscar proveedor por razón social...">
+                        <button type="submit" class="btn text-white px-4" style="background-color: #f97316;"><i class="bi bi-search me-1"></i> Buscar</button>
+                    </form>
+                    <p class="text-muted small m-0"><i class="bi bi-info-circle me-1"></i> Los resultados de la búsqueda se visualizarán automáticamente en la pestaña "Lista de Proveedores".</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR PROVEEDOR -->
+<div th:if="${proveedorDataEdit != null}" class="modal fade" id="modalEditarProveedor" tabindex="-1" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content p-2">
+			<form th:action="@{/proveedores/editar}" method="post" th:object="${proveedorDataEdit}">
+				<div class="modal-header border-0 pb-0">
+					<h5 class="modal-title fw-bold" style="color: #f97316;"><i class="bi bi-pencil-square me-2"></i>Editar Proveedor</h5>
+					<a th:href="@{/proveedores/listar}" class="btn-close"></a>
+				</div>
+				<div class="modal-body row g-3">
+					<input type="hidden" th:field="*{idProveedor}"/>
+
+					<div class="col-12">
+						<label class="form-label fw-semibold">RUC</label>
+						<input type="text" th:field="*{ruc}" class="form-control" maxlength="11" required>
+					</div>
+					<div class="col-12">
+						<label class="form-label fw-semibold">Razón Social</label>
+						<input type="text" th:field="*{razonSocial}" class="form-control" required>
+					</div>
+					<div class="col-12">
+						<label class="form-label fw-semibold">Teléfono</label>
+						<input type="text" th:field="*{telefono}" class="form-control" maxlength="15" required>
+					</div>
+					<div class="col-12">
+						<label class="form-label fw-semibold">Estado</label>
+						<select th:field="*{estado}" class="form-select">
+							<option value="1">Activo</option>
+							<option value="0">Inactivo</option>
+						</select>
+					</div>
+				</div>
+				<div class="modal-footer border-0 pt-3">
+					<a th:href="@{/proveedores/listar}" class="btn btn-light border px-4">Cancelar</a>
+					<button type="submit" class="btn text-white px-4 fw-semibold" style="background-color: #f97316;"><i class="bi bi-save me-1"></i> Guardar cambios</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Activar Modal automáticamente cuando hay datos a editar -->
+<script th:if="${proveedorDataEdit != null}">
+	document.addEventListener('DOMContentLoaded', function () {
+		var modalElement = document.getElementById('modalEditarProveedor');
+		if (modalElement) {
+			var modal = new bootstrap.Modal(modalElement);
+			modal.show();
+		}
+	});
+</script>
+</body>
+</html>
