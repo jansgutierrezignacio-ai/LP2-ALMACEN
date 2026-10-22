@@ -31,6 +31,6 @@ public class MovimientoController {
         List<Movimiento> lista = movimientoService.listarMovimientos();
         model.addAttribute("dataMovimiento", lista);
         model.addAttribute("cantReg", lista.size());
-        return "Movimientos";
+        return "movimientos";
     }
 }

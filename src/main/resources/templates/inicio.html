@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/comunes :: head('Inicio')}"></head>
+<body>
+	<div class="d-flex">
+
+		<nav th:replace="~{fragments/comunes :: menu}"></nav>
+
+		<!-- Contenido -->
+		<div class="content flex-grow-1 p-3">
+
+			<div th:replace="~{fragments/comunes :: topbar('Dashboard', 'bi-speedometer2')}"></div>
+
+			<div class="container-fluid">
+
+				<!-- Cards -->
+				<div class="row g-3">
+					<div class="col-md-3">
+						<a th:href="@{/clientes(type=listar)}" style="text-decoration: none;">
+							<div class="card card-blue card-action">
+								<i class="bi bi-people"></i>
+								<h6>Clientes</h6>
+								<h3 th:text="${totalClientes}">0</h3>
+							</div>
+						</a>
+					</div>
+
+					<div class="col-md-3">
+						<a th:href="@{/proveedores(type=listar)}" style="text-decoration: none;">
+							<div class="card card-orange card-action">
+								<i class="bi bi-truck"></i>
+								<h6>Proveedores</h6>
+								<h3 th:text="${totalProveedores}">0</h3>
+							</div>
+						</a>
+					</div>
+
+					<div class="col-md-3">
+						<a th:href="@{/productos(type=listar)}" style="text-decoration: none;">
+							<div class="card card-purple card-action">
+								<i class="bi bi-box"></i>
+								<h6>Productos</h6>
+								<h3 th:text="${totalProductos}">0</h3>
+							</div>
+						</a>
+					</div>
+
+					<div class="col-md-3">
+						<a th:href="@{/reportes(type=listar)}" style="text-decoration: none;">
+							<div class="card card-brown card-action">
+								<i class="bi bi-graph-up-arrow"></i>
+								<h6>Reporte</h6>
+								<h3 th:text="${totalReporte}">0</h3>
+							</div>
+						</a>
+					</div>
+
+					<div class="col-md-3">
+						<a th:href="@{/movimientos(type=listar)}" style="text-decoration: none;">
+							<div class="card card-gray card-action">
+								<i class="bi bi-clock-history"></i>
+								<h6>Movimientos</h6>
+								<h3 th:text="${totalMovimientos}">0</h3>
+							</div>
+						</a>
+					</div>
+
+					<div class="col-md-3">
+						<a th:href="@{/productos(type=listar)}" style="text-decoration: none;">
+							<div class="card card-darkblue card-action">
+								<i class="bi bi-box-seam"></i>
+								<h6>Existencia total</h6>
+								<h3 th:text="${totalStock}">0</h3>
+							</div>
+						</a>
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<script th:replace="~{fragments/comunes :: scripts}"></script>
+</body>
+</html>

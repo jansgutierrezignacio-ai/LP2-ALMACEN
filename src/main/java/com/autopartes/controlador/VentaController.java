@@ -73,7 +73,7 @@ public class VentaController {
         model.addAttribute("idClienteSeleccionado", session.getAttribute("idClienteSeleccionado"));
         model.addAttribute("fechaHoy", new java.util.Date());
         model.addAttribute("historialVentas", ventaService.listarVentas());
-        return "Ventas";
+        return "ventas";
     }
 
     /**

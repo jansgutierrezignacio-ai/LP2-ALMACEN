@@ -40,7 +40,7 @@ public class ProveedorController {
     public String nuevo(Model model) {
         cargarListado(model);
         model.addAttribute("activeTab", "agregar");
-        return "Proveedores";
+        return "proveedores";
     }
 
     @GetMapping(value = "/proveedores", params = "type=buscar")
@@ -49,21 +49,21 @@ public class ProveedorController {
         List<Proveedor> data = proveedorService.buscarProveedorByNombre(texto);
         model.addAttribute("dataProveedor", data);
         model.addAttribute("cantReg", data.size());
-        return "Proveedores";
+        return "proveedores";
     }
 
     @GetMapping(value = "/proveedores", params = "type=info")
     public String info(@RequestParam("id") int id, Model model) {
         cargarListado(model);
         model.addAttribute("proveedorInfo", proveedorService.obtenerProveedor(id));
-        return "Proveedores";
+        return "proveedores";
     }
 
     @GetMapping(value = "/proveedores", params = "type=infoEdit")
     public String infoEdit(@RequestParam("id") int id, Model model) {
         cargarListado(model);
         model.addAttribute("proveedorDataEdit", proveedorService.obtenerProveedor(id));
-        return "Proveedores";
+        return "proveedores";
     }
 
     @PostMapping(value = "/proveedores", params = "type=registrar")
@@ -127,7 +127,7 @@ public class ProveedorController {
 
     private String listarProveedor(Model model) {
         cargarListado(model);
-        return "Proveedores";
+        return "proveedores";
     }
 
     private void cargarListado(Model model) {

@@ -40,7 +40,7 @@ public class ClienteController {
     public String nuevo(Model model) {
         cargarListado(model);
         model.addAttribute("activeTab", "agregar");
-        return "Clientes";
+        return "clientes";
     }
 
     @GetMapping(value = "/clientes", params = "type=buscar")
@@ -50,14 +50,14 @@ public class ClienteController {
         model.addAttribute("dataCliente", data);
         model.addAttribute("cantReg", data.size());
         model.addAttribute("txtBuscar", texto);
-        return "Clientes";
+        return "clientes";
     }
 
     @GetMapping(value = "/clientes", params = "type=info")
     public String info(@RequestParam("id") int id, Model model) {
         cargarListado(model);
         model.addAttribute("dataClienteInfo", clienteService.obtenerCliente(id));
-        return "Clientes";
+        return "clientes";
     }
 
     @GetMapping(value = "/clientes", params = "type=infoEdit")
@@ -65,7 +65,7 @@ public class ClienteController {
         cargarListado(model);
         model.addAttribute("clienteDataEdit", clienteService.obtenerCliente(id));
         model.addAttribute("activeTab", "editar");
-        return "Clientes";
+        return "clientes";
     }
 
     @PostMapping(value = "/clientes", params = "type=registrar")
@@ -129,7 +129,7 @@ public class ClienteController {
 
     private String listarCliente(Model model) {
         cargarListado(model);
-        return "Clientes";
+        return "clientes";
     }
 
     private void cargarListado(Model model) {

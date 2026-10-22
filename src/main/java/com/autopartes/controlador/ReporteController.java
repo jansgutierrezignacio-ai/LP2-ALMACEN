@@ -86,7 +86,7 @@ public class ReporteController {
         model.addAttribute("maxPdf", MAX_FILAS_PDF);
         // Si se llega aquí tras rechazar un PDF demasiado grande, se muestra el aviso.
         model.addAttribute("avisoLimite", limite);
-        return "Reporte";
+        return "reporte";
     }
 
     // Detalle de una venta seleccionada.
@@ -95,7 +95,7 @@ public class ReporteController {
         List<Reporte> detalle = reporteService.obtenerDetalleVenta(idVenta);
         model.addAttribute("detalleVenta", detalle);
         model.addAttribute("nroVenta", idVenta);
-        return "Reporte";
+        return "reporte";
     }
 
     // Descarga en PDF del reporte de ventas (JasperReports). Si se indica un

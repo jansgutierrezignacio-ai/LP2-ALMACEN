@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/comunes :: head('Clientes')}"></head>
+<body>
+<div class="d-flex">
+
+    <nav th:replace="~{fragments/comunes :: menu}"></nav>
+
+    <!-- Contenido -->
+    <div class="content flex-grow-1 p-3">
+
+        <div th:replace="~{fragments/comunes :: topbar('Clientes', 'bi-people')}"></div>
+
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert"
+             th:if="${!#strings.isEmpty(mensajeOk)}">
+            <i class="bi bi-check-circle"></i> <span th:text="${mensajeOk}">OK</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- NavBar Cards -->
+        <div class="nav nav-pills nav-pills-custom d-flex flex-nowrap overflow-auto gap-3 p-2" role="tablist">
+            <div class="nav-link text-center p-3" th:classappend="${activeTab != 'agregar'} ? 'active'"
+                 data-bs-toggle="pill" data-bs-target="#listar">
+                <i class="bi bi-card-list fs-3"></i>
+                <div>Listar Cliente</div>
+            </div>
+            <div class="nav-link text-center p-3" th:classappend="${activeTab == 'agregar'} ? 'active'"
+                 data-bs-toggle="pill" data-bs-target="#agregar">
+                <i class="bi bi-person-plus fs-3"></i>
+                <div>Agregar Cliente</div>
+            </div>
+            <div class="nav-link text-center p-3" data-bs-toggle="pill" data-bs-target="#consultar">
+                <i class="bi bi-search fs-3"></i>
+                <div>Consultar Cliente</div>
+            </div>
+        </div>
+
+        <!-- Paneles de contenido (tab-content) -->
+        <div class="tab-content">
+
+            <!-- PANEL LISTAR -->
+            <div class="tab-pane fade" id="listar" th:classappend="${activeTab != 'agregar'} ? 'show active'">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Listado de Clientes (<span th:text="${cantReg != null ? cantReg : 0}">0</span>)</h5>
+                    <form th:action="@{/clientes}" method="get" class="d-flex gap-2">
+                        <input type="hidden" name="type" value="buscar"/>
+                        <input type="text" name="txtBuscar" th:value="${txtBuscar}" class="form-control"
+                               placeholder="Buscar por nombre...">
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+                        <a th:href="@{/clientes(type=listar)}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
+                    </form>
+                </div>
+                <table class="table table-custom table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>DNI</th><th>Nombre</th><th>Apellido</th><th>Teléfono</th><th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${dataCliente}">
+                            <td th:text="${c.idCliente}">1</td>
+                            <td th:text="${c.dni}">00000000</td>
+                            <td th:text="${c.nombre}">Nombre</td>
+                            <td th:text="${c.apellido}">Apellido</td>
+                            <td th:text="${c.telefono}">000000000</td>
+                            <td>
+                                <a th:href="@{/clientes(type=infoEdit, id=${c.idCliente})}"
+                                   class="btn btn-sm btn-warning" title="Editar"><i class="bi bi-pencil"></i></a>
+                                <form th:action="@{/clientes}" method="post" class="d-inline"
+                                      onsubmit="return confirm('¿Eliminar este cliente?');">
+                                    <input type="hidden" name="type" value="eliminar"/>
+                                    <input type="hidden" name="id" th:value="${c.idCliente}"/>
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(dataCliente)}">
+                            <td colspan="6" class="text-center text-muted">No hay clientes registrados.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PANEL AGREGAR -->
+            <div class="tab-pane fade" id="agregar" th:classappend="${activeTab == 'agregar'} ? 'show active'">
+                <h5 class="mb-3">Nuevo Cliente</h5>
+                <form th:action="@{/clientes}" method="post" class="row g-3">
+                    <input type="hidden" name="type" value="registrar"/>
+                    <div class="col-md-6">
+                        <label class="form-label">DNI</label>
+                        <input type="text" name="txtDni" class="form-control" maxlength="9" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" name="txtTelefono" class="form-control" maxlength="9" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="txtNombre" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Apellido</label>
+                        <input type="text" name="txtApellido" class="form-control" required>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Registrar</button>
+                        <button type="reset" class="btn btn-secondary">Limpiar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- PANEL CONSULTAR -->
+            <div class="tab-pane fade" id="consultar">
+                <h5 class="mb-3">Consultar Cliente</h5>
+                <form th:action="@{/clientes}" method="get" class="d-flex gap-2 mb-3">
+                    <input type="hidden" name="type" value="buscar"/>
+                    <input type="text" name="txtBuscar" class="form-control"
+                           placeholder="Buscar cliente por nombre o apellido...">
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                </form>
+                <p class="text-muted">Los resultados se mostrarán en la pestaña "Listar Cliente".</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR (se abre automáticamente si hay clienteDataEdit) -->
+<th:block th:if="${clienteDataEdit != null}">
+    <div class="modal fade" id="modalEditarCliente" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/clientes}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-pencil"></i> Editar Cliente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="type" value="editar"/>
+                        <input type="hidden" name="idCliente" th:value="${clienteDataEdit.idCliente}"/>
+                        <div class="mb-3">
+                            <label class="form-label">DNI</label>
+                            <input type="text" name="txtDni" class="form-control"
+                                   th:value="${clienteDataEdit.dni}" maxlength="9" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" name="txtNombre" class="form-control"
+                                   th:value="${clienteDataEdit.nombre}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" name="txtApellido" class="form-control"
+                                   th:value="${clienteDataEdit.apellido}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teléfono</label>
+                            <input type="text" name="txtTelefono" class="form-control"
+                                   th:value="${clienteDataEdit.telefono}" maxlength="9" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a th:href="@{/clientes(type=listar)}" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var modal = new bootstrap.Modal(document.getElementById('modalEditarCliente'));
+            modal.show();
+        });
+    </script>
+</th:block>
+
+<script th:replace="~{fragments/comunes :: scripts}"></script>
+</body>
+</html>

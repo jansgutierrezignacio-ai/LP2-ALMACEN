@@ -62,12 +62,11 @@ public class AuthFilter extends OncePerRequestFilter {
         chain.doFilter(request, response);
     }
 
-    /** Rutas accesibles sin sesión: login, recursos estáticos, error de credenciales y la página de error. */
+    /** Rutas accesibles sin sesión: login y recursos estáticos. La vista de error de credenciales se renderiza en /login. */
     private boolean esPublica(String path) {
         return path.isEmpty()
                 || path.equals("/")
                 || path.equals("/login")
-                || path.equals("/errorLogin.jsp")
                 || path.equals("/error")
                 || path.startsWith("/CSS/")
                 || path.startsWith("/JS/")

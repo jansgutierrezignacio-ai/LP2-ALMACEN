@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="|${titulo} - Sistema de Almacén|">Sistema de Almacén</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Estilos propios -->
+    <link rel="stylesheet" th:href="@{/CSS/General.css}">
+    <link rel="stylesheet" th:href="@{/CSS/modern.css}">
+</head>
+<body>
+
+<!--
+    Menú lateral reutilizable. Se inyecta en cada vista con
+    th:replace="~{fragments/comunes :: menu}" y muestra únicamente los módulos
+    que el rol del usuario en sesión (idTipo: 1=Administrador, 2=Vendedor,
+    3=Almacenero) tiene permitidos. La opción activa se deduce de `seccion`,
+    que calcula ModeloGlobal a partir de la URL solicitada.
+-->
+<nav th:fragment="menu" class="sidebar p-3 d-flex flex-column">
+    <div class="brand-title fs-4 mb-4 text-center">
+        <i class="bi bi-box-seam"></i> Inventario
+    </div>
+    <ul class="nav flex-column mb-auto">
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${seccion == '/inicio'} ? 'active'" th:href="@{/inicio}">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${session.usuario.idTipo == 1 || session.usuario.idTipo == 2}">
+            <a class="nav-link" th:classappend="${seccion == '/clientes'} ? 'active'"
+               th:href="@{/clientes(type=listar)}">
+                <i class="bi bi-people"></i> Clientes
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${session.usuario.idTipo == 1 || session.usuario.idTipo == 3}">
+            <a class="nav-link" th:classappend="${seccion == '/proveedores'} ? 'active'"
+               th:href="@{/proveedores(type=listar)}">
+                <i class="bi bi-truck"></i> Proveedores
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${seccion == '/productos'} ? 'active'"
+               th:href="@{/productos(type=listar)}">
+                <i class="bi bi-box"></i> Productos
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${session.usuario.idTipo == 1 || session.usuario.idTipo == 2}">
+            <a class="nav-link" th:classappend="${seccion == '/ventas'} ? 'active'" th:href="@{/ventas}">
+                <i class="bi bi-cart-check"></i> Ventas
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${session.usuario.idTipo == 1 || session.usuario.idTipo == 2}">
+            <a class="nav-link" th:classappend="${seccion == '/reportes'} ? 'active'"
+               th:href="@{/reportes(type=listar)}">
+                <i class="bi bi-graph-up-arrow"></i> Reporte
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${session.usuario.idTipo == 1 || session.usuario.idTipo == 3}">
+            <a class="nav-link" th:classappend="${seccion == '/movimientos'} ? 'active'"
+               th:href="@{/movimientos(type=listar)}">
+                <i class="bi bi-clock-history"></i> Movimientos
+            </a>
+        </li>
+
+        <li class="nav-item" th:if="${session.usuario.idTipo == 1}">
+            <a class="nav-link" th:classappend="${seccion == '/usuarios'} ? 'active'" th:href="@{/usuarios}">
+                <i class="bi bi-person-badge"></i> Usuarios
+            </a>
+        </li>
+
+        <li class="nav-item mt-2 pt-3 border-top border-secondary">
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="nav-link w-100 text-start border-0 bg-transparent">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                </button>
+            </form>
+        </li>
+    </ul>
+</nav>
+
+<!-- Barra superior: título del módulo y usuario con su rol. -->
+<div th:fragment="topbar(titulo, icono)" class="topbar d-flex justify-content-between align-items-center px-4 mb-4">
+    <h5>
+        <i class="bi me-2" th:classappend="${icono}"></i><span th:text="${titulo}"></span>
+    </h5>
+    <span class="badge-role">
+        <i class="bi bi-person-circle me-1"></i>
+        <span th:text="|${session.usuario.username} · ${rolNombre}|"></span>
+    </span>
+</div>
+
+<!-- Scripts comunes (Bootstrap con Popper). -->
+<script th:fragment="scripts" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

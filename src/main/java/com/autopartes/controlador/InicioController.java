@@ -69,6 +69,6 @@ public class InicioController {
         model.addAttribute("totalReporte", totalReporte);
         model.addAttribute("totalMovimientos", totalMovimientos);
 
-        return "Inicio";
+        return "inicio";
     }
 }

@@ -45,7 +45,7 @@ public class ProductoController {
     public String nuevo(Model model) {
         cargarListado(model);
         model.addAttribute("activeTab", "agregar");
-        return "Productos";
+        return "productos";
     }
 
     @GetMapping(value = "/productos", params = "type=buscar")
@@ -56,21 +56,21 @@ public class ProductoController {
         model.addAttribute("cantReg", data.size());
         model.addAttribute("listProveedor", proveedorService.listarProveedor());
         model.addAttribute("txtBuscar", texto);
-        return "Productos";
+        return "productos";
     }
 
     @GetMapping(value = "/productos", params = "type=info")
     public String info(@RequestParam("id") int id, Model model) {
         cargarListado(model);
         model.addAttribute("productoInfo", productoService.obtenerProducto(id));
-        return "Productos";
+        return "productos";
     }
 
     @GetMapping(value = "/productos", params = "type=infoEdit")
     public String infoEdit(@RequestParam("id") int id, Model model) {
         cargarListado(model);
         model.addAttribute("productoDataEdit", productoService.obtenerProducto(id));
-        return "Productos";
+        return "productos";
     }
 
     @PostMapping(value = "/productos", params = "type=registrar")
@@ -143,7 +143,7 @@ public class ProductoController {
 
     private String listarProducto(Model model) {
         cargarListado(model);
-        return "Productos";
+        return "productos";
     }
 
     private void cargarListado(Model model) {

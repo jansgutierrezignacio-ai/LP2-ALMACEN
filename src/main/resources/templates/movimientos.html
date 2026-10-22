@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/comunes :: head('Movimientos')}"></head>
+<body>
+<div class="d-flex">
+
+    <nav th:replace="~{fragments/comunes :: menu}"></nav>
+
+    <!-- Contenido -->
+    <div class="content flex-grow-1 p-3">
+
+        <div th:replace="~{fragments/comunes :: topbar('Movimientos', 'bi-clock-history')}"></div>
+
+        <!-- NAV -->
+        <div class="nav nav-pills nav-pills-custom d-flex flex-nowrap gap-3 p-2">
+            <div class="nav-link active text-center p-3">
+                <i class="bi bi-card-list fs-3"></i>
+                <div>Historial de Movimientos</div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT -->
+        <div class="tab-content">
+
+            <!-- LISTAR -->
+            <div class="tab-pane fade show active">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Listado de Movimientos (<span th:text="${cantReg != null ? cantReg : 0}">0</span>)</h5>
+                </div>
+
+                <table class="table table-custom table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Fecha</th>
+                            <th>Usuario</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr th:each="m : ${dataMovimiento}">
+                            <td th:text="${m.idMovimiento}">1</td>
+                            <td><span class="badge-movement badge-general" th:text="${m.tipo}">TIPO</span></td>
+                            <td th:text="${m.descripcion}">Descripción</td>
+                            <td th:text="${m.fecha != null ? #dates.format(m.fecha, 'dd/MM/yyyy HH:mm') : ''}">Fecha</td>
+                            <td th:text="${m.usuario}">Usuario</td>
+                        </tr>
+
+                        <tr th:if="${#lists.isEmpty(dataMovimiento)}">
+                            <td colspan="5" class="text-center text-muted">
+                                No hay movimientos registrados.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:replace="~{fragments/comunes :: scripts}"></script>
+</body>
+</html>

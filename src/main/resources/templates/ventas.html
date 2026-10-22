@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/comunes :: head('Punto de Venta')}"></head>
+
+<body>
+<div class="d-flex">
+
+	<nav th:replace="~{fragments/comunes :: menu}"></nav>
+
+	<!-- Contenido -->
+	<div class="content flex-grow-1 p-3">
+
+		<div th:replace="~{fragments/comunes :: topbar('Punto de Venta', 'bi-cart-check')}"></div>
+
+		<div class="container-fluid p-4">
+
+			<div class="alert alert-success alert-dismissible fade show" role="alert"
+			     th:if="${!#strings.isEmpty(mensajeOk)}">
+				<i class="bi bi-check-circle"></i> <span th:text="${mensajeOk}">OK</span>
+				<a th:if="${idVentaRecien != null}" th:href="@{/reportes/boleta(id=${idVentaRecien})}"
+				   class="btn btn-sm btn-outline-success ms-2">
+					<i class="bi bi-file-earmark-pdf"></i> Descargar boleta
+				</a>
+				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+			</div>
+			<div class="alert alert-danger alert-dismissible fade show" role="alert"
+			     th:if="${!#strings.isEmpty(mensaje)}">
+				<i class="bi bi-exclamation-triangle"></i> <span th:text="${mensaje}">Error</span>
+				<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+			</div>
+
+			<div class="row g-4">
+
+				<!-- ================= IZQUIERDA: catálogo + historial ================= -->
+				<div class="col-xl-8">
+
+					<div class="card shadow-sm mb-4">
+						<div class="card-header card-header-dark d-flex justify-content-between align-items-center">
+							<span><i class="bi bi-box-seam"></i> Catálogo de productos</span>
+							<span class="badge bg-light text-dark"
+							      th:text="|${#lists.size(listaProductos)} producto(s)|">0 producto(s)</span>
+						</div>
+
+						<div class="card-body pb-0">
+							<form th:action="@{/ventas}" method="get" class="input-group mb-3">
+								<span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+								<input type="text" name="q" th:value="${q}" class="form-control"
+								       placeholder="Buscar por nombre, descripción o código..." autofocus>
+								<button type="submit" class="btn btn-dark">Buscar</button>
+								<a th:if="${!#strings.isEmpty(q)}" th:href="@{/ventas}"
+								   class="btn btn-outline-secondary" title="Limpiar búsqueda">
+									<i class="bi bi-x-lg"></i>
+								</a>
+							</form>
+						</div>
+
+						<div class="table-responsive catalogo-scroll">
+							<table class="table table-custom table-hover align-middle mb-0">
+								<thead>
+									<tr>
+										<th>Código</th>
+										<th>Producto</th>
+										<th class="text-end">Precio</th>
+										<th class="text-center">Stock</th>
+										<th class="text-end">Agregar</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="p : ${listaProductos}"
+									    th:with="cantidadCarrito=${enCarrito[p.idProducto]},
+									             stockDisponible=${p.stock - (enCarrito[p.idProducto] ?: 0)},
+									             formId=|agregar-${p.idProducto}|"
+									    th:classappend="${stockDisponible > 0} ? 'fila-producto'"
+									    th:attr="onclick=${stockDisponible > 0 ? 'document.getElementById(' + formId + ').requestSubmit();' : null}">
+										<td class="text-muted small text-nowrap" th:text="${p.codigo}">COD</td>
+										<td th:text="${p.nombre}">Producto</td>
+										<td class="text-end text-nowrap">
+											S/ <span th:text="${#numbers.formatDecimal(p.precio, 1, 2)}">0.00</span>
+										</td>
+										<td class="text-center">
+											<span class="badge" th:text="${stockDisponible}"
+											      th:classappend="${stockDisponible <= 0 ? 'bg-secondary' : (stockDisponible <= 5 ? 'bg-danger' : (stockDisponible <= 15 ? 'bg-warning text-dark' : 'bg-success'))}"
+											      th:title="|En el carrito: ${cantidadCarrito ?: 0}|">0</span>
+										</td>
+										<td class="text-end">
+											<form th:id="${formId}" th:action="@{/ventas}" method="post"
+											      class="d-inline" onclick="event.stopPropagation();">
+												<input type="hidden" name="type" value="agregar">
+												<input type="hidden" name="idProducto" th:value="${p.idProducto}">
+												<input type="hidden" name="cantidad" value="1">
+												<input type="hidden" name="q" th:value="${q}">
+												<input type="hidden" class="cliente-recordado" name="idCliente"
+												       th:value="${idClienteSeleccionado != null ? idClienteSeleccionado : ''}">
+												<button type="submit" class="btn btn-sm btn-success"
+												        th:disabled="${stockDisponible <= 0}" title="Agregar 1 unidad">
+													<i class="bi bi-plus-lg"></i>
+												</button>
+											</form>
+										</td>
+									</tr>
+
+									<tr th:if="${#lists.isEmpty(listaProductos)}">
+										<td colspan="5" class="text-center text-muted py-5">
+											<i class="bi bi-search fs-2 d-block mb-1"></i>
+											<span th:if="${!#strings.isEmpty(q)}">
+												No se encontraron productos para "<strong th:text="${q}">texto</strong>".
+											</span>
+											<span th:unless="${!#strings.isEmpty(q)}">No hay productos registrados.</span>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<!-- Historial (colapsable) -->
+					<div class="card shadow-sm">
+						<div class="card-header card-header-dark d-flex justify-content-between align-items-center"
+						     data-bs-toggle="collapse" data-bs-target="#historialVentas" role="button" aria-expanded="true">
+							<span><i class="bi bi-clock-history"></i> Historial reciente de ventas</span>
+							<i class="bi bi-chevron-down"></i>
+						</div>
+						<div class="collapse show" id="historialVentas">
+							<ul class="list-group list-group-flush">
+								<li class="list-group-item d-flex justify-content-between align-items-center"
+								    th:each="h : ${historialVentas}">
+									<div>
+										<strong th:text="|Venta #${h.idVenta}|">Venta #1</strong>
+										<small class="text-muted d-block">
+											<span th:text="${h.fecha}">Fecha</span> &middot;
+											<span th:text="${h.nombreCliente}">Cliente</span> &middot;
+											<span th:text="${h.username}">Usuario</span>
+										</small>
+									</div>
+									<div class="d-flex align-items-center gap-2">
+										<span class="badge bg-success fs-6">
+											S/ <span th:text="${#numbers.formatDecimal(h.total, 1, 2)}">0.00</span>
+										</span>
+										<a th:href="@{/reportes/boleta(id=${h.idVenta})}" class="btn btn-sm btn-outline-danger"
+										   title="Descargar boleta en PDF">
+											<i class="bi bi-file-earmark-pdf"></i>
+										</a>
+									</div>
+								</li>
+								<li class="list-group-item text-muted text-center" th:if="${#lists.isEmpty(historialVentas)}">
+									Sin ventas registradas.
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<!-- ================= DERECHA: carrito, cliente y boleta (sticky) ================= -->
+				<div class="col-xl-4">
+					<div class="pos-resumen">
+
+						<div class="card shadow-sm mb-3">
+							<div class="card-header card-header-teal d-flex justify-content-between align-items-center">
+								<span><i class="bi bi-cart3"></i> Venta actual</span>
+								<span class="badge bg-light text-dark"
+								      th:text="|${#lists.size(carrito)} ítem(s)|">0 ítem(s)</span>
+							</div>
+
+							<div class="card-body text-center text-muted py-5" th:if="${#lists.isEmpty(carrito)}">
+								<i class="bi bi-cart-x fs-1 d-block mb-2"></i>
+								Selecciona productos del catálogo.
+							</div>
+
+							<th:block th:unless="${#lists.isEmpty(carrito)}">
+								<ul class="list-group list-group-flush">
+									<li class="list-group-item" th:each="item : ${carrito}">
+										<div class="d-flex justify-content-between align-items-start">
+											<div class="me-2">
+												<div class="fw-semibold" th:text="${item.nombre}">Producto</div>
+												<small class="text-muted">
+													<span th:text="${item.codigo}">COD</span> · S/
+													<span th:text="${#numbers.formatDecimal(item.precioUnitario, 1, 2)}">0.00</span>
+												</small>
+											</div>
+											<form th:action="@{/ventas}" method="post" class="m-0">
+												<input type="hidden" name="type" value="eliminar">
+												<input type="hidden" name="idProducto" th:value="${item.idProducto}">
+												<input type="hidden" name="q" th:value="${q}">
+												<input type="hidden" class="cliente-recordado" name="idCliente"
+												       th:value="${idClienteSeleccionado != null ? idClienteSeleccionado : ''}">
+												<button type="submit" class="btn btn-sm btn-link text-danger p-0"
+												        title="Quitar del carrito">
+													<i class="bi bi-x-lg"></i>
+												</button>
+											</form>
+										</div>
+
+										<div class="d-flex justify-content-between align-items-center mt-2">
+											<div class="d-flex align-items-center gap-1">
+												<form th:action="@{/ventas}" method="post" class="m-0">
+													<input type="hidden" name="type" value="actualizar">
+													<input type="hidden" name="idProducto" th:value="${item.idProducto}">
+													<input type="hidden" name="cantidad" th:value="${item.cantidad - 1}">
+													<input type="hidden" name="q" th:value="${q}">
+													<input type="hidden" class="cliente-recordado" name="idCliente"
+													       th:value="${idClienteSeleccionado != null ? idClienteSeleccionado : ''}">
+													<button type="submit" class="btn btn-sm btn-outline-secondary px-2"
+													        title="Quitar uno">&minus;</button>
+												</form>
+												<span class="pos-cantidad badge bg-light text-dark border"
+												      th:text="${item.cantidad}">1</span>
+												<form th:action="@{/ventas}" method="post" class="m-0">
+													<input type="hidden" name="type" value="actualizar">
+													<input type="hidden" name="idProducto" th:value="${item.idProducto}">
+													<input type="hidden" name="cantidad" th:value="${item.cantidad + 1}">
+													<input type="hidden" name="q" th:value="${q}">
+													<input type="hidden" class="cliente-recordado" name="idCliente"
+													       th:value="${idClienteSeleccionado != null ? idClienteSeleccionado : ''}">
+													<button type="submit" class="btn btn-sm btn-outline-secondary px-2"
+													        title="Agregar uno">+</button>
+												</form>
+											</div>
+											<span class="fw-bold text-nowrap ms-2">
+												S/ <span th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
+											</span>
+										</div>
+									</li>
+								</ul>
+								<div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center pt-3">
+									<span class="text-uppercase text-muted fw-bold small">Total</span>
+									<span class="fs-4 fw-bold text-success">
+										S/ <span th:text="${#numbers.formatDecimal(totalVenta, 1, 2)}">0.00</span>
+									</span>
+								</div>
+							</th:block>
+						</div>
+
+						<form th:action="@{/ventas}" method="post">
+							<input type="hidden" name="type" value="confirmar"/>
+
+							<div class="card shadow-sm border-primary mb-3">
+								<div class="card-header card-header-blue">
+									<i class="bi bi-person-badge"></i> Cliente
+								</div>
+								<div class="card-body">
+									<input type="text" id="filtroCliente" class="form-control form-control-sm mb-2"
+									       placeholder="Buscar cliente..." autocomplete="off">
+									<div class="lista-clientes" id="listaClientes">
+										<label class="cliente-opcion" th:each="c : ${listaClientes}"
+										       th:attr="data-nombre=${(c.nombre ?: '') + ' ' + (c.apellido ?: '')}">
+											<input class="form-check-input m-0" type="radio" name="idCliente"
+											       th:value="${c.idCliente}"
+											       th:checked="${idClienteSeleccionado != null && c.idCliente == idClienteSeleccionado}">
+											<i class="bi bi-person"></i>
+											<span th:text="${(c.nombre ?: '') + ' ' + (c.apellido ?: '')}">Cliente</span>
+										</label>
+									</div>
+									<div id="sinClientes" class="form-text text-danger d-none">Sin coincidencias.</div>
+									<div id="ayudaCliente" class="form-text text-warning d-none">Selecciona un cliente para confirmar.</div>
+								</div>
+							</div>
+
+							<div class="card shadow-sm">
+								<div class="card-header card-header-dark d-flex justify-content-between align-items-center">
+									<span><i class="bi bi-receipt-cutoff"></i> Boleta de venta</span>
+									<span class="badge bg-light text-dark">Vista previa</span>
+								</div>
+								<div class="card-body">
+									<div class="boleta">
+										<div class="text-center">
+											<div class="fw-bold">COMERCIAL AUTOPARTES S.A.C.</div>
+											<small class="d-block text-muted">Boleta de venta</small>
+											<small class="d-block text-muted">N.&deg; pendiente de asignar</small>
+										</div>
+										<div class="boleta-separador"></div>
+										<div class="boleta-dato">
+											<span>Cliente</span>
+											<span id="boletaCliente">&mdash;</span>
+										</div>
+										<div class="boleta-dato">
+											<span>Vendedor</span>
+											<span th:text="${session.usuario.username}">usuario</span>
+										</div>
+										<div class="boleta-dato">
+											<span>Fecha</span>
+											<span th:text="${#dates.format(fechaHoy, 'dd/MM/yyyy HH:mm')}">00/00/0000</span>
+										</div>
+										<th:block th:if="${!#lists.isEmpty(carrito)}">
+											<div class="boleta-separador"></div>
+											<ul class="boleta-items">
+												<li th:each="item : ${carrito}">
+													<span class="boleta-cant" th:text="|${item.cantidad}×|">1×</span>
+													<span class="boleta-nombre" th:text="${item.nombre}"
+													      th:title="${item.nombre}">Producto</span>
+													<span class="boleta-importe"
+													      th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)}">0.00</span>
+												</li>
+											</ul>
+										</th:block>
+										<div class="boleta-separador"></div>
+										<div class="boleta-total">
+											<span>TOTAL</span>
+											<span>S/ <span th:text="${#numbers.formatDecimal(totalVenta, 1, 2)}">0.00</span></span>
+										</div>
+										<small class="d-block text-center text-muted mt-2">Documento de control interno</small>
+									</div>
+								</div>
+								<div class="card-footer bg-white border-0 pt-3">
+									<button type="submit" id="btnConfirmar" class="btn btn-primary w-100 btn-lg"
+									        th:attr="data-carrito-vacio=${#lists.isEmpty(carrito)}"
+									        th:disabled="${#lists.isEmpty(carrito)}">
+										<i class="bi bi-check-circle-fill"></i> Confirmar venta
+									</button>
+									<small class="text-muted d-block text-center mt-2">
+										El stock se descuenta al confirmar.
+									</small>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script th:replace="~{fragments/comunes :: scripts}"></script>
+<script>
+	// Lista de clientes: filtro en vivo, seleccion resaltada y boton de
+	// confirmar deshabilitado hasta que haya cliente y carrito.
+	(function () {
+		var filtro = document.getElementById('filtroCliente');
+		var lista = document.getElementById('listaClientes');
+		var aviso = document.getElementById('sinClientes');
+		var ayuda = document.getElementById('ayudaCliente');
+		var boton = document.getElementById('btnConfirmar');
+		var boletaCliente = document.getElementById('boletaCliente');
+		if (!filtro || !lista) {
+			return;
+		}
+		var filas = Array.prototype.slice.call(lista.querySelectorAll('.cliente-opcion'));
+		var recordados = Array.prototype.slice.call(document.querySelectorAll('input.cliente-recordado'));
+		var carritoVacio = boton ? boton.getAttribute('data-carrito-vacio') === 'true' : false;
+
+		// Cada alta/baja del carrito recarga la pagina: el cliente elegido viaja
+		// en estos campos ocultos para que el servidor lo recuerde en la sesion.
+		function recordarCliente(valor) {
+			recordados.forEach(function (campo) {
+				campo.value = valor;
+			});
+		}
+
+		function marcarActivo() {
+			filas.forEach(function (fila) {
+				var radio = fila.querySelector('input[name="idCliente"]');
+				fila.classList.toggle('activo', !!(radio && radio.checked));
+			});
+			// La boleta muestra el nombre del cliente en cuanto se elige.
+			if (boletaCliente) {
+				var marcado = lista.querySelector('input[name="idCliente"]:checked');
+				boletaCliente.textContent = marcado
+					? marcado.parentElement.getAttribute('data-nombre')
+					: '—';
+			}
+		}
+
+		function refrescarConfirmar() {
+			if (!boton) {
+				return;
+			}
+			var hayCliente = !!lista.querySelector('input[name="idCliente"]:checked');
+			boton.disabled = carritoVacio || !hayCliente;
+			if (ayuda) {
+				ayuda.classList.toggle('d-none', hayCliente || carritoVacio);
+			}
+		}
+
+		filtro.addEventListener('input', function () {
+			var texto = filtro.value.trim().toLowerCase();
+			var visibles = 0;
+			filas.forEach(function (fila) {
+				var nombre = (fila.getAttribute('data-nombre') || '').toLowerCase();
+				var coincide = texto === '' || nombre.indexOf(texto) !== -1;
+				fila.classList.toggle('d-none', !coincide);
+				if (coincide) {
+					visibles++;
+				}
+			});
+			if (aviso) {
+				aviso.classList.toggle('d-none', visibles !== 0);
+			}
+		});
+
+		lista.addEventListener('change', function (e) {
+			if (e.target && e.target.name === 'idCliente') {
+				marcarActivo();
+				recordarCliente(e.target.value);
+				refrescarConfirmar();
+			}
+		});
+
+		// Enter no debe enviar el formulario de confirmacion de la venta.
+		filtro.addEventListener('keydown', function (e) {
+			if (e.key === 'Enter') {
+				e.preventDefault();
+			}
+		});
+
+		marcarActivo();
+		refrescarConfirmar();
+	})();
+</script>
+</body>
+</html>
