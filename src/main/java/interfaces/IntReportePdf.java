@@ -3,6 +3,7 @@ package interfaces;
 import java.util.List;
 
 import modelo.Reporte;
+import modelo.Venta;
 
 /**
  * Generación de los dos reportes del sistema en formato PDF con
@@ -16,4 +17,7 @@ public interface IntReportePdf {
 
     /** PDF del detalle de productos de una venta. */
     public byte[] generarDetalleVenta(List<Reporte> datos, int idVenta);
+
+    /** PDF de la boleta (comprobante) de una venta, con su cabecera. */
+    public byte[] generarBoleta(List<Reporte> datos, Venta venta);
 }

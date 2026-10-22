@@ -325,11 +325,75 @@ body {
     border: none;
 }
 
-.total-box {
-    background-color: #f8fafc;
-    border: 2px dashed #cbd5e1;
-    border-radius: 12px;
-    padding: 16px;
+/* Boleta: vista previa con aspecto de ticket (monoespaciada y separadores
+   punteados), para ver como quedara el comprobante antes de confirmar. */
+.boleta {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: .5rem;
+    padding: .8rem .85rem;
+    font-family: "Courier New", Courier, monospace;
+    font-size: .75rem;
+    color: #1f2937;
+}
+
+.boleta-separador {
+    border-top: 1px dashed #cbd5e1;
+    margin: .55rem 0;
+}
+
+.boleta-dato {
+    display: flex;
+    justify-content: space-between;
+    gap: .75rem;
+    line-height: 1.5;
+}
+
+.boleta-dato > span:first-child {
+    color: #64748b;
+}
+
+.boleta-dato > span:last-child {
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.boleta-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.boleta-items li {
+    display: flex;
+    align-items: baseline;
+    gap: .35rem;
+    line-height: 1.45;
+}
+
+.boleta-cant {
+    flex: 0 0 auto;
+    color: #64748b;
+}
+
+.boleta-nombre {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.boleta-importe {
+    flex: 0 0 auto;
+}
+
+.boleta-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 1rem;
+    font-weight: 700;
 }
 
 /* ===== Modales (Clientes, Productos, Proveedores) ===== */
@@ -337,4 +401,112 @@ body {
     border: none;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== Punto de venta ===== */
+/* El carrito y el resumen acompanan el scroll para tener siempre el total
+   y el boton de confirmar a la vista. */
+.pos-resumen {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    padding-right: .35rem;
+}
+
+/* General.css pinta todo .card con texto blanco (pensado para las tarjetas de
+   colores del inicio). En el resumen de venta el fondo es blanco, asi que el
+   cuerpo recupera el texto oscuro. */
+.pos-resumen .card-body {
+    color: #212529;
+}
+
+@media (max-width: 1199.98px) {
+    .pos-resumen {
+        position: static;
+    }
+}
+
+/* Filas del catalogo: clic en cualquier parte agrega una unidad. */
+.fila-producto {
+    cursor: pointer;
+}
+
+/* Contador de cantidad entre los botones - y +. */
+.pos-cantidad {
+    min-width: 2.5rem;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* El catalogo scrollea dentro de su tarjeta para que la pagina no crezca con
+   cientos de productos; la cabecera de la tabla queda fija arriba. */
+.catalogo-scroll {
+    max-height: 58vh;
+    overflow-y: auto;
+}
+
+.catalogo-scroll thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Lista de clientes: visible, con scroll y hover, en vez de un desplegable
+   que tapa el resto de la pantalla. */
+.lista-clientes {
+    max-height: 216px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: .5rem;
+    padding: .25rem;
+    background-color: #fff;
+}
+
+.cliente-opcion {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    margin: 0;
+    padding: .5rem .65rem;
+    border-radius: .375rem;
+    cursor: pointer;
+    transition: background-color .12s ease, color .12s ease;
+}
+
+/* El radio sigue en el formulario, pero oculto: la fila entera es el control
+   y su estado se ve en el fondo azul. */
+.cliente-opcion .form-check-input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    margin: 0;
+    opacity: 0;
+}
+
+.cliente-opcion:focus-within {
+    outline: 2px solid #86b7fe;
+    outline-offset: -2px;
+}
+
+.cliente-opcion:hover {
+    background-color: #eef4ff;
+}
+
+.cliente-opcion i {
+    color: #94a3b8;
+}
+
+.cliente-opcion.activo {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.cliente-opcion.activo:hover {
+    background-color: #0b5ed7;
+}
+
+.cliente-opcion.activo i {
+    color: #fff;
 }

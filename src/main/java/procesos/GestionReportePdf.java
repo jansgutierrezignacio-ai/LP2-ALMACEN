@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import interfaces.IntReportePdf;
 import modelo.Reporte;
+import modelo.Venta;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -34,6 +35,7 @@ public class GestionReportePdf implements IntReportePdf {
 
     private JasperReport plantillaFechas;
     private JasperReport plantillaDetalle;
+    private JasperReport plantillaBoleta;
 
     @Override
     public byte[] generarVentasPorFechas(List<Reporte> datos, String fechaInicio, String fechaFin) {
@@ -52,8 +54,18 @@ public class GestionReportePdf implements IntReportePdf {
         return rellenarYExportar(plantillaDetalle, datos, parametros);
     }
 
-    /** Compila la plantilla .jrxml una sola vez (la compilación es lo costoso). */
-    private JasperReport compilar(String ruta, JasperReport yaCompilada) {
+    @Override
+    public byte[] generarBoleta(List<Reporte> datos, Venta venta) {
+        plantillaBoleta = compilar("/reportes/boleta_venta.jrxml", plantillaBoleta);
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("pIdVenta", venta.getIdVenta());
+        parametros.put("pCliente", venta.getNombreCliente());
+        parametros.put("pFecha", venta.getFecha());
+        parametros.put("pVendedor", venta.getUsername());
+        return rellenarYExportar(plantillaBoleta, datos, parametros);
+    }
+
+    /** Compila la plantilla .jrxml una sola vez (la compilación es lo costoso). */    private JasperReport compilar(String ruta, JasperReport yaCompilada) {
         if (yaCompilada != null) {
             return yaCompilada;
         }

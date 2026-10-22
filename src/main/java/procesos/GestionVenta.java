@@ -87,12 +87,29 @@ public class GestionVenta implements IntVenta {
         for (Object[] f : filas) {
             Venta v = new Venta();
             v.setIdVenta(((Number) f[0]).intValue());
-            v.setFecha(f[1] == null ? null : String.valueOf(f[1]));
+            v.setFecha(formatearFecha(f[1]));
             v.setNombreCliente(f[2] == null ? null : String.valueOf(f[2]));
             v.setUsername(f[3] == null ? null : String.valueOf(f[3]));
             v.setTotal(f[4] == null ? 0 : ((Number) f[4]).doubleValue());
             lista.add(v);
         }
         return lista;
+    }
+
+    /**
+     * Normaliza la fecha que devuelve MySQL: Venta.fecha es DATETIME, así que
+     * Hibernate entrega un Timestamp cuyo toString() arrastra ".0".
+     */
+    private String formatearFecha(Object valor) {
+        if (valor == null) {
+            return null;
+        }
+        if (valor instanceof java.sql.Timestamp) {
+            return new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format((java.util.Date) valor);
+        }
+        if (valor instanceof java.util.Date) {
+            return new java.text.SimpleDateFormat("dd/MM/yyyy").format((java.util.Date) valor);
+        }
+        return String.valueOf(valor);
     }
 }

@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import interfaces.IntReporte;
 import interfaces.IntReportePdf;
+import interfaces.IntVenta;
 import modelo.Reporte;
+import modelo.Venta;
 
 @Controller
 public class ReporteController {
@@ -36,6 +38,9 @@ public class ReporteController {
 
     @Autowired
     private IntReportePdf reportePdfService;
+
+    @Autowired
+    private IntVenta ventaService;
 
     // Al entrar a /reportes se muestra directamente el listado, para no obligar
     // a elegir un rango de fechas antes de ver datos.
@@ -158,6 +163,30 @@ public class ReporteController {
         List<Reporte> datos = reporteService.obtenerDetalleVenta(idVenta);
         byte[] pdf = reportePdfService.generarDetalleVenta(datos, idVenta);
         enviarPdf(response, pdf, "reporte_venta_" + idVenta + ".pdf");
+    }
+
+    /**
+     * Boleta (comprobante) de una venta en PDF. La cabecera (cliente, fecha y
+     * vendedor) sale de sp_listarVentas y las líneas de sp_ReporteDetalleVenta,
+     * las mismas consultas que alimentan el historial y el reporte.
+     */
+    @GetMapping("/reportes/boleta")
+    public void descargarBoleta(@RequestParam("id") int idVenta,
+                                HttpServletResponse response) throws IOException {
+        Venta venta = null;
+        for (Venta v : ventaService.listarVentas()) {
+            if (v.getIdVenta() == idVenta) {
+                venta = v;
+                break;
+            }
+        }
+        if (venta == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Venta no encontrada");
+            return;
+        }
+        List<Reporte> datos = reporteService.obtenerDetalleVenta(idVenta);
+        byte[] pdf = reportePdfService.generarBoleta(datos, venta);
+        enviarPdf(response, pdf, "boleta_venta_" + idVenta + ".pdf");
     }
 
     /** Escribe los bytes del PDF en la respuesta como archivo adjunto. */
