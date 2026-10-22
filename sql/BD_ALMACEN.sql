@@ -565,6 +565,32 @@ BEGIN
     VALUES(p_username, p_clave, p_idTipo, p_nombres, p_apellidos);
 END $$
 
+-- sp_ObtenerUsuario: datos de un usuario para el formulario de edición.
+DROP PROCEDURE IF EXISTS sp_ObtenerUsuario $$
+CREATE PROCEDURE sp_ObtenerUsuario(IN p_id INT)
+BEGIN
+    SELECT u.idUsuario, u.username, u.clave, u.idTipo, t.descripcion, u.nombres, u.apellidos
+    FROM Usuarios u INNER JOIN TiposUsuario t ON u.idTipo = t.idTipo
+    WHERE u.idUsuario = p_id;
+END $$
+
+-- sp_EditarUsuario: actualiza los datos del usuario (la clave ya llega cifrada).
+DROP PROCEDURE IF EXISTS sp_EditarUsuario $$
+CREATE PROCEDURE sp_EditarUsuario(
+    IN p_id        INT,
+    IN p_username  VARCHAR(50),
+    IN p_clave     VARCHAR(100),
+    IN p_idTipo    INT,
+    IN p_nombres   VARCHAR(50),
+    IN p_apellidos VARCHAR(50)
+)
+BEGIN
+    UPDATE Usuarios
+       SET username = p_username, clave = p_clave, idTipo = p_idTipo,
+           nombres = p_nombres, apellidos = p_apellidos
+     WHERE idUsuario = p_id;
+END $$
+
 -- Ventas (punto de venta) -------------------------------------------------------------------------------------
 -- sp_registrarVenta: inserta la cabecera de la venta y devuelve el id generado.
 DROP PROCEDURE IF EXISTS sp_registrarVenta $$

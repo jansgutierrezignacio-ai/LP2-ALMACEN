@@ -11,7 +11,7 @@ Esta carpeta contiene la base de datos del proyecto **Comercial Autopartes SAC**
 
 | Archivo | Descripción |
 |---|---|
-| `BD_ALMACEN.sql` | **Script completo**: base de datos, 8 tablas, datos semilla y 31 procedimientos almacenados. |
+| `BD_ALMACEN.sql` | **Script completo**: base de datos, 8 tablas, datos semilla y 33 procedimientos almacenados. |
 | `README.md` | Este documento. |
 
 > El script original del equipo no se versiona: sus tablas, columnas, tipos, claves
@@ -89,6 +89,6 @@ mysql -h 127.0.0.1 -P 3306 -u zeth -p'<MYSQL_PASSWORD>' BD_ALMACEN
 
 - **Tablas (8):** TiposUsuario, Usuarios, Proveedor, Cliente, Producto, Venta, DetalleVenta, Movimientos.
 - **Roles:** 1 Administrador, 2 Vendedor, 3 Almacenero.
-- **Procedimientos (31):** clientes (6), proveedores (7), productos (7), reportes (3),
-  movimientos (3), usuarios (1: `sp_RegistrarUsuario`), ventas (4: `sp_registrarVenta`,
+- **Procedimientos (33):** clientes (6), proveedores (7), productos (7), reportes (3),
+  movimientos (3), usuarios (3: `sp_RegistrarUsuario`, `sp_ObtenerUsuario`, `sp_EditarUsuario`), ventas (4: `sp_registrarVenta`,
   `sp_registrarDetalleVenta`, `sp_reducirStockProducto`, `sp_listarVentas`).

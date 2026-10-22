@@ -6,4 +6,6 @@ public interface IntUsuario {
 	public Usuario login(String username, String clave);	
 	public int crearUsuario(Usuario usuario);
 	public List<Usuario> listarUsuario();
+	public Usuario obtenerUsuario(int id);
+	public int editarUsuario(Usuario usuario);
 }

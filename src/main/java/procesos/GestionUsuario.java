@@ -79,18 +79,54 @@ public class GestionUsuario implements IntUsuario {
         List<Usuario> lista = new ArrayList<>();
         // Consulta nativa con el JOIN a TiposUsuario para completar el nombre del rol.
         List<Object[]> filas = em.createNativeQuery(
-                "SELECT u.idUsuario, u.username, u.clave, u.idTipo, t.descripcion "
+                "SELECT u.idUsuario, u.username, u.clave, u.idTipo, t.descripcion, u.nombres, u.apellidos "
               + "FROM Usuarios u INNER JOIN TiposUsuario t ON u.idTipo = t.idTipo "
               + "ORDER BY u.idUsuario DESC").getResultList();
         for (Object[] f : filas) {
-            Usuario u = new Usuario();
-            u.setIdUsuario(((Number) f[0]).intValue());
-            u.setUsername((String) f[1]);
-            u.setClave((String) f[2]);
-            u.setIdTipo(((Number) f[3]).intValue());
-            u.setNombreTipo(f[4] == null ? null : String.valueOf(f[4]));
-            lista.add(u);
+            lista.add(mapear(f));
         }
         return lista;
+    }
+
+    @Override
+    public Usuario obtenerUsuario(int id) {
+        javax.persistence.StoredProcedureQuery q = em.createStoredProcedureQuery("sp_ObtenerUsuario");
+        q.registerStoredProcedureParameter(1, Integer.class, javax.persistence.ParameterMode.IN);
+        q.setParameter(1, id);
+        @SuppressWarnings("unchecked")
+        List<Object[]> filas = q.getResultList();
+        return filas.isEmpty() ? null : mapear(filas.get(0));
+    }
+
+    @Override
+    public int editarUsuario(Usuario usuario) {
+        javax.persistence.StoredProcedureQuery q = em.createStoredProcedureQuery("sp_EditarUsuario");
+        q.registerStoredProcedureParameter(1, Integer.class, javax.persistence.ParameterMode.IN);
+        q.registerStoredProcedureParameter(2, String.class, javax.persistence.ParameterMode.IN);
+        q.registerStoredProcedureParameter(3, String.class, javax.persistence.ParameterMode.IN);
+        q.registerStoredProcedureParameter(4, Integer.class, javax.persistence.ParameterMode.IN);
+        q.registerStoredProcedureParameter(5, String.class, javax.persistence.ParameterMode.IN);
+        q.registerStoredProcedureParameter(6, String.class, javax.persistence.ParameterMode.IN);
+        q.setParameter(1, usuario.getIdUsuario());
+        q.setParameter(2, usuario.getUsername());
+        q.setParameter(3, usuario.getClave());
+        q.setParameter(4, usuario.getIdTipo());
+        q.setParameter(5, usuario.getNombres());
+        q.setParameter(6, usuario.getApellidos());
+        return q.executeUpdate();
+    }
+
+    // sp_listarUsuario / sp_ObtenerUsuario:
+    // idUsuario, username, clave, idTipo, descripcion, nombres, apellidos
+    private Usuario mapear(Object[] f) {
+        Usuario u = new Usuario();
+        u.setIdUsuario(((Number) f[0]).intValue());
+        u.setUsername((String) f[1]);
+        u.setClave((String) f[2]);
+        u.setIdTipo(((Number) f[3]).intValue());
+        u.setNombreTipo(f[4] == null ? null : String.valueOf(f[4]));
+        u.setNombres(f[5] == null ? null : String.valueOf(f[5]));
+        u.setApellidos(f[6] == null ? null : String.valueOf(f[6]));
+        return u;
     }
 }
