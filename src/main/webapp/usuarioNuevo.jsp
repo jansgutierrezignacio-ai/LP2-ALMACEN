@@ -8,7 +8,7 @@
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="CSS/modern.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/CSS/modern.css">
 
 <style>
     body {
@@ -80,7 +80,7 @@ $(document).ready(function() {
             <h4 class="text-center">Formulario de Registro de Usuario</h4>
             <hr>
             
-            <form action="usuarios" method="post" name="frmNuevo">
+            <form action="${pageContext.request.contextPath}/usuarios" method="post" name="frmNuevo">
                 <input type="hidden" name="type" value="registrar">
                 
                 <div class="mb-3 row">
@@ -125,7 +125,7 @@ $(document).ready(function() {
                 <hr>
                 
                 <div class="d-flex justify-content-between">
-                    <a href="usuarios" class="btn btn-secondary">Regresar</a>
+                    <a href="${pageContext.request.contextPath}/usuarios" class="btn btn-secondary">Regresar</a>
                     <button type="submit" class="btn btn-success">Registrar Usuario</button>
                 </div>
             </form>
